@@ -1,0 +1,25 @@
+# Xcode / Swift
+
+## User settings
+xcuserdata/
+
+## Build output
+build/
+DerivedData/
+.build/
+*.moved-aside
+*.hmap
+
+## Swift Package Manager
+.swiftpm/
+
+## App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## tooling (pre-commit installs a local node_modules)
+node_modules/
+
+# macOS
+.DS_Store

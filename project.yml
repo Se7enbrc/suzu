@@ -1,0 +1,51 @@
+name: Suzu
+
+options:
+  bundleIdPrefix: io.ugfugl
+  deploymentTarget:
+    macOS: "26.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MACOSX_DEPLOYMENT_TARGET: "26.0"
+    DEVELOPMENT_LANGUAGE: en
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_HARDENED_RUNTIME: YES
+
+packages:
+  SimplyCoreAudio:
+    url: https://github.com/rnine/SimplyCoreAudio
+    from: "4.1.1"
+
+targets:
+  Suzu:
+    type: application
+    platform: macOS
+    deploymentTarget: "26.0"
+    # Version lives in Version.xcconfig (single source of truth), applied as
+    # the target's base config for both build configurations.
+    configFiles:
+      Debug: Suzu/Version.xcconfig
+      Release: Suzu/Version.xcconfig
+    sources:
+      - path: Suzu
+        excludes:
+          - "Info.plist"
+          - "Suzu.entitlements"
+          - "Version.xcconfig"
+    settings:
+      base:
+        PRODUCT_NAME: Suzu
+        PRODUCT_BUNDLE_IDENTIFIER: io.ugfugl.Suzu
+        INFOPLIST_FILE: Suzu/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Suzu/Suzu.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        COMBINE_HIDPI_IMAGES: YES
+    dependencies:
+      - package: SimplyCoreAudio

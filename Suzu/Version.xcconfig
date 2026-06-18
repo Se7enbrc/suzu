@@ -1,0 +1,12 @@
+// SINGLE SOURCE OF TRUTH for the app version. Bump here only.
+//
+// CalVer: YYYY.M.MICRO - no zero-pad on month, MICRO resets to 0 each month.
+//   2026.6.0 = first June 2026 release; 2026.6.1 = same-month hotfix.
+// CURRENT_PROJECT_VERSION (build number) is a monotonic YYYYMMDD stamp.
+//
+// Read by Info.plist ($(MARKETING_VERSION) / $(CURRENT_PROJECT_VERSION)).
+// Applied to the target as its base xcconfig via project.yml `configFiles`, so
+// the generated pbxproj never carries a hand-edited version.
+
+MARKETING_VERSION = 2026.6.0
+CURRENT_PROJECT_VERSION = 20260618

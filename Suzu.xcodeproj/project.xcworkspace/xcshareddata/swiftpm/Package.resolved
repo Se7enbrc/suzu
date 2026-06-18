@@ -1,0 +1,24 @@
+{
+  "originHash" : "c64f286c106ccfcb50efb19e19219e8fe34cefb4655452c8494fcf0b2d2204d4",
+  "pins" : [
+    {
+      "identity" : "simplycoreaudio",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/rnine/SimplyCoreAudio",
+      "state" : {
+        "revision" : "35cc0e6eac5c2ee5049431f4238b0e333cf79869",
+        "version" : "4.1.1"
+      }
+    },
+    {
+      "identity" : "swift-atomics",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-atomics.git",
+      "state" : {
+        "revision" : "b601256eab081c0f92f059e12818ac1d4f178ff7",
+        "version" : "1.3.0"
+      }
+    }
+  ],
+  "version" : 3
+}

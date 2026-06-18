@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- suzu runs SANDBOXED and is built to be a Mac App Store candidate.
+	     Phase 1 (read the device list, set the default input/output device,
+	     register a Login Item) needs nothing beyond the base App Sandbox:
+	     setting the default CoreAudio device does not require leaving the
+	     sandbox, we never capture audio (so no microphone entitlement), and
+	     SMAppService.mainApp registration is sandbox-safe. Add an entitlement
+	     here only when a feature actually forces it. -->
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+</dict>
+</plist>
