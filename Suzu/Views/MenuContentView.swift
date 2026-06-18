@@ -5,6 +5,7 @@
 //  the "right now" header, the output list, the input list, and the quiet
 //  footer. That's the entire surface - no EQ, no sliders, no meters.
 
+import AppKit
 import CoreAudio
 import SwiftUI
 
@@ -34,7 +35,12 @@ struct MenuContentView: View {
             }
 
             Divider()
-            MenuFooter { openSettings() }
+            MenuFooter {
+                // A menu-bar-only app can open Settings behind everything;
+                // bring it to the front.
+                NSApp.activate(ignoringOtherApps: true)
+                openSettings()
+            }
         }
         .padding(14)
         .frame(width: 300)
