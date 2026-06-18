@@ -35,7 +35,10 @@ struct SuzuApp: App {
             LaunchAtLogin.setEnabled(prefs.launchAtLogin)
             audio.start()
             if !prefs.firstRunComplete {
-                WelcomePresenter.shared.show { prefs.firstRunComplete = true }
+                // Mark seen as soon as it's shown, so it never reappears no
+                // matter how she dismisses it.
+                prefs.firstRunComplete = true
+                WelcomePresenter.shared.show {}
             }
             Log.app.notice("suzu launched")
         }

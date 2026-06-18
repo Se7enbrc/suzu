@@ -33,7 +33,7 @@ final class Preferences {
         store.register(defaults: [
             Key.launchAtLogin: true,
             SmartMoment.headsetTogether.enabledKey: true,
-            SmartMoment.backToSpeakers.enabledKey: true,
+            SmartMoment.backToSpeakers.enabledKey: true
         ])
         firstRunComplete = store.bool(forKey: Key.firstRun)
         launchAtLogin = store.bool(forKey: Key.launchAtLogin)
