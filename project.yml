@@ -40,7 +40,7 @@ targets:
     settings:
       base:
         PRODUCT_NAME: Suzu
-        PRODUCT_BUNDLE_IDENTIFIER: io.ugfugl.Suzu
+        PRODUCT_BUNDLE_IDENTIFIER: io.ugfugl.suzu
         INFOPLIST_FILE: Suzu/Info.plist
         CODE_SIGN_ENTITLEMENTS: Suzu/Suzu.entitlements
         GENERATE_INFOPLIST_FILE: NO

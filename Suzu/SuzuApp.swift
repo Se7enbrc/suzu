@@ -84,9 +84,10 @@ private struct MenuBarLabel: View {
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    /// Set by `SuzuApp.init` (main actor) and run once at launch. `nonisolated`
-    /// storage so the adaptor can reach it before any view body runs.
-    nonisolated(unsafe) static var bootstrap: (@MainActor () -> Void)?
+    /// Set by `SuzuApp.init` and run once at launch. Both the writer (App.init)
+    /// and the reader (this delegate method) are main-actor isolated, so the
+    /// slot can be too - no `nonisolated(unsafe)` required.
+    @MainActor static var bootstrap: (@MainActor () -> Void)?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Self.bootstrap?()

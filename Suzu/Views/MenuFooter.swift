@@ -14,9 +14,11 @@ struct MenuFooter: View {
         HStack {
             Button(Copy.settings, action: openSettings)
                 .buttonStyle(.plain)
+                .keyboardShortcut(",", modifiers: .command)
             Spacer()
             Button(Copy.quit) { NSApplication.shared.terminate(nil) }
                 .buttonStyle(.plain)
+                .keyboardShortcut("q", modifiers: .command)
         }
         .font(.system(.callout, design: .rounded))
         .foregroundStyle(.secondary)

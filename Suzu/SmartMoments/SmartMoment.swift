@@ -16,8 +16,8 @@ enum SmartMoment: String, CaseIterable, Identifiable, Sendable {
     /// Plain-words label for the Settings toggle. No jargon.
     var settingsTitle: String {
         switch self {
-        case .headsetTogether: return "Use my headset for sound and mic"
-        case .backToSpeakers: return "Offer my Mac’s speakers when the headset leaves"
+        case .headsetTogether: return "When a headset connects, use it for sound and mic"
+        case .backToSpeakers: return "When a headset disconnects, offer the built-in speakers"
         }
     }
 

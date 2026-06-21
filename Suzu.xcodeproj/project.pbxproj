@@ -274,7 +274,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.ugfugl.Suzu;
+				PRODUCT_BUNDLE_IDENTIFIER = io.ugfugl.suzu;
 				PRODUCT_NAME = Suzu;
 				SDKROOT = macosx;
 			};
@@ -295,7 +295,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.ugfugl.Suzu;
+				PRODUCT_BUNDLE_IDENTIFIER = io.ugfugl.suzu;
 				PRODUCT_NAME = Suzu;
 				SDKROOT = macosx;
 			};

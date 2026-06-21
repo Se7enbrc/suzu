@@ -8,7 +8,7 @@
 import os
 
 enum Log {
-    private static let subsystem = "io.ugfugl.Suzu"
+    private static let subsystem = "io.ugfugl.suzu"
 
     static let app = Logger(subsystem: subsystem, category: "App")
     static let audio = Logger(subsystem: subsystem, category: "Audio")
