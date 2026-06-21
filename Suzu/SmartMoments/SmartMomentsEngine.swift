@@ -4,27 +4,32 @@
 //  The "good instincts, good memory" layer. It watches device arrivals and
 //  departures and, for each Smart Moment, follows one pattern:
 //
-//    • first time            → set a gentle, dismissible suggestion (the menu
-//                              shows it as a card; the menu-bar icon hints)
-//    • she said "always"     → just do it, with a momentary undo toast
-//    • she said "no thanks"  → stay quiet
+//    • first time            → a gentle, dismissible suggestion (the menu shows
+//                              it as a card; the menu-bar icon hints)
+//    • answered "always"     → just do it, with a momentary undo toast
+//    • answered "no thanks"  → stay quiet
 //
-//  A suggestion she ignores expires on its own and won't return this launch.
-//  Three explicit declines quietly switch the moment off in Settings.
+//  A suggestion ignored expires on its own and won't return this launch. Three
+//  explicit declines quietly switch the moment off in Settings.
+//
+//  Dependencies are injected (audio, the toast sink, lid state, the offer
+//  lifetime) so the whole machine is unit-testable without CoreAudio or AppKit.
 
-import CoreAudio
 import Foundation
 import Observation
 
-/// A single, dismissible offer shown in the menu. Only one exists at a time.
+/// A single, dismissible offer shown in the menu. One exists at a time.
 struct Suggestion: Identifiable, Equatable {
     let moment: SmartMoment
     let title: String
     let actionLabel: String
     let dismissLabel: String
     let confirmName: String
-    let targetOutputID: AudioObjectID?
-    let targetInputID: AudioObjectID?
+    let targetOutputUID: String?
+    let targetInputUID: String?
+    /// Show the "Always do this" choice only after the moment has been seen
+    /// before - the first encounter stays a clean two-button question.
+    let showAlways: Bool
 
     var id: SmartMoment { moment }
 }
@@ -35,26 +40,37 @@ final class SmartMomentsEngine {
     /// The card the menu should show, if any.
     var suggestion: Suggestion?
 
-    @ObservationIgnored private let audio: AudioController
+    @ObservationIgnored private let audio: any AudioRouting
     @ObservationIgnored private let prefs: Preferences
+    @ObservationIgnored private let presentToast: @MainActor (ToastContent) -> Void
+    @ObservationIgnored private let lidIsOpen: @MainActor () -> Bool?
+    @ObservationIgnored private let offerLifetime: Duration
 
     /// Moments ignored this launch - don't re-offer until next launch.
     @ObservationIgnored private var suppressedThisSession: Set<SmartMoment> = []
     @ObservationIgnored private var expiry: Task<Void, Never>?
 
     private static let declineLimit = 3
-    private static let offerLifetime: Duration = .seconds(20)
 
-    init(audio: AudioController, prefs: Preferences) {
+    init(
+        audio: any AudioRouting,
+        prefs: Preferences,
+        presentToast: @escaping @MainActor (ToastContent) -> Void = { ToastPresenter.shared.show($0) },
+        lidIsOpen: @escaping @MainActor () -> Bool? = { LidSensor.isLidOpen },
+        offerLifetime: Duration = .seconds(20)
+    ) {
         self.audio = audio
         self.prefs = prefs
+        self.presentToast = presentToast
+        self.lidIsOpen = lidIsOpen
+        self.offerLifetime = offerLifetime
     }
 
     var hasPendingSuggestion: Bool { suggestion != nil }
 
     // MARK: - Reacting to the world
 
-    func handle(_ change: AudioController.WorldChange) {
+    func handle(_ change: WorldChange) {
         // A headset arriving is the headline moment; it wins over the others.
         if let headset = change.added.first(where: { $0.hasInput && $0.hasOutput }) {
             considerHeadset(headset)
@@ -69,43 +85,43 @@ final class SmartMomentsEngine {
         let moment = SmartMoment.headsetTogether
         guard prefs.isEnabled(moment) else { return }
         // Already fully on the headset - nothing to offer.
-        if audio.currentOutputID == headset.id, audio.currentInputID == headset.id { return }
+        if audio.currentOutput?.uid == headset.uid, audio.currentInput?.uid == headset.uid { return }
 
-        let suggestion = Suggestion(
+        offer(Suggestion(
             moment: moment,
             title: Copy.headsetTitle,
             actionLabel: Copy.headsetAction,
             dismissLabel: Copy.headsetDismiss,
             confirmName: headset.name,
-            targetOutputID: headset.id,
-            targetInputID: headset.id
-        )
-        offer(suggestion)
+            targetOutputUID: headset.uid,
+            targetInputUID: headset.uid,
+            showAlways: prefs.offers(moment) > 0
+        ))
     }
 
     private func considerBackToSpeakers() {
         let moment = SmartMoment.backToSpeakers
         guard prefs.isEnabled(moment) else { return }
-        // Need the Mac's own speakers to exist...
         guard let speakers = audio.builtInOutput else { return }
-        // ...and don't offer them while docked with the lid shut.
-        if LidSensor.isLidOpen == false { return }
+        // Don't offer the built-in speakers while docked with the lid shut.
+        if lidIsOpen() == false { return }
 
-        let mic = audio.builtInInput
-        let alreadyHome = audio.currentOutputID == speakers.id
-            && (mic == nil || audio.currentInputID == mic?.id)
-        if alreadyHome { return }
+        let needOutput = audio.currentOutput?.uid != speakers.uid
+        // Only move the mic if the current input is unresolved (its device left).
+        // A still-present third mic (a USB interface, a desk mic) is left alone.
+        let micTarget = audio.currentInput == nil ? audio.builtInInput?.uid : nil
+        guard needOutput || micTarget != nil else { return }
 
-        let suggestion = Suggestion(
+        offer(Suggestion(
             moment: moment,
             title: Copy.speakersTitle,
             actionLabel: Copy.speakersAction,
             dismissLabel: Copy.speakersDismiss,
             confirmName: speakers.name,
-            targetOutputID: speakers.id,
-            targetInputID: mic?.id
-        )
-        offer(suggestion)
+            targetOutputUID: needOutput ? speakers.uid : nil,
+            targetInputUID: micTarget,
+            showAlways: prefs.offers(moment) > 0
+        ))
     }
 
     /// Route a fresh suggestion through the ask / always / never gate.
@@ -114,7 +130,7 @@ final class SmartMomentsEngine {
         case .never:
             return
         case .always:
-            perform(suggestion)
+            perform(suggestion, silent: true)
         case .ask:
             guard !suppressedThisSession.contains(suggestion.moment) else { return }
             present(suggestion)
@@ -125,9 +141,10 @@ final class SmartMomentsEngine {
 
     private func present(_ suggestion: Suggestion) {
         self.suggestion = suggestion
+        prefs.recordOffer(suggestion.moment)
         expiry?.cancel()
-        expiry = Task { [weak self] in
-            try? await Task.sleep(for: Self.offerLifetime)
+        expiry = Task { [weak self, lifetime = offerLifetime] in
+            try? await Task.sleep(for: lifetime)
             guard !Task.isCancelled else { return }
             self?.expire(suggestion.moment)
         }
@@ -141,19 +158,20 @@ final class SmartMomentsEngine {
         suggestion = nil
     }
 
-    // MARK: - Her answers
+    // MARK: - The answers
 
-    /// "Use headset" / "Switch" - optionally with "Always do this" ticked.
+    /// "Use headset" / "Switch" - optionally with "Always do this" ticked. The
+    /// card vanishing and the row highlight moving are the confirmation, so the
+    /// explicit path shows no toast.
     func accept(_ suggestion: Suggestion, always: Bool) {
         expiry?.cancel()
         self.suggestion = nil
         if always { prefs.setPolicy(suggestion.moment, .always) }
-        prefs.resetDeclines(suggestion.moment)
-        perform(suggestion)
+        perform(suggestion, silent: false)
     }
 
-    /// "Not now" / "Stay" - suppress this launch, and self-disable if she's said
-    /// no enough times.
+    /// "Not now" / "Stay" - suppress this launch, and self-disable if declined
+    /// enough times.
     func decline(_ suggestion: Suggestion) {
         expiry?.cancel()
         self.suggestion = nil
@@ -166,15 +184,23 @@ final class SmartMomentsEngine {
         }
     }
 
-    // MARK: - Doing it (with undo)
+    // MARK: - Doing it (only claim success that actually happened)
 
-    private func perform(_ suggestion: Suggestion) {
+    private func perform(_ suggestion: Suggestion, silent: Bool) {
         let previous = audio.currentRoute
-        audio.route(outputID: suggestion.targetOutputID, inputID: suggestion.targetInputID)
-        ToastPresenter.shared.show(ToastContent(
+        guard audio.route(outputUID: suggestion.targetOutputUID, inputUID: suggestion.targetInputUID) else {
+            // The target vanished between the offer and now - don't lie about it.
+            Log.moments.notice("route did not take for \(suggestion.moment.rawValue, privacy: .public)")
+            return
+        }
+        prefs.resetDeclines(suggestion.moment)
+
+        // Only the silent (automatic) path needs a momentary undo note.
+        guard silent else { return }
+        presentToast(ToastContent(
             message: Copy.switched(to: suggestion.confirmName),
             actionLabel: Copy.undo,
-            action: { [weak audio] in audio?.apply(previous) }
+            action: { [weak audio] in _ = audio?.apply(previous) }
         ))
     }
 }

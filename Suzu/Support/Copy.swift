@@ -15,7 +15,7 @@ enum Copy {
     // Smart Moment: back to the built-in speakers.
     static let speakersTitle = "Switch back to your Mac’s speakers and mic?"
     static let speakersAction = "Switch"
-    static let speakersDismiss = "Stay"
+    static let speakersDismiss = "Not now"
 
     static let alwaysDoThis = "Always do this"
 
@@ -32,13 +32,13 @@ enum Copy {
     static func soundAndMic(_ name: String) -> String { "Sound and mic: \(name)" }
     static func sound(_ name: String) -> String { "Sound: \(name)" }
     static func mic(_ name: String) -> String { "Mic: \(name)" }
-    static let nowhere = "—"
+    static let nowhere = "None"
 
     // First run.
     static let welcomeTitle = "Welcome to suzu"
     static let welcomeBody =
         "suzu keeps your sound and mic where you want them. Click the menu bar "
-        + "icon to see where they’re going, or to move them — every change can be undone."
+        + "icon to see where they are, or to move them — every change can be undone."
     static let welcomeButton = "Get started"
 
     // Settings.

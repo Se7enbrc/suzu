@@ -3,8 +3,11 @@
 //
 //  The momentary "Switched to … · Undo" note that follows a silent (automatic)
 //  switch. A small non-activating glass panel near the menu bar that fades in,
-//  offers a single Undo, and fades itself out after a few seconds. It never
-//  steals focus and never blocks anything.
+//  offers a single Undo, and fades out after a few seconds. It never steals
+//  focus. On show it posts a high-priority accessibility announcement, so the
+//  auto-switch and its Undo are perceivable to VoiceOver users, not just seen.
+//  Hovering the toast pauses the countdown, so reaching for Undo never races a
+//  fade. Glass here is legitimate - the panel floats over arbitrary content.
 
 import AppKit
 import SwiftUI
@@ -15,6 +18,7 @@ final class ToastPresenter {
     private init() {}
 
     private static let size = NSSize(width: 320, height: 64)
+    private static let lifetime: Duration = .seconds(8)
 
     private var panel: NSPanel?
     private var dismissal: Task<Void, Never>?
@@ -26,10 +30,16 @@ final class ToastPresenter {
         self.panel = panel
 
         panel.contentView = NSHostingView(rootView:
-            ToastView(content: content, onUndo: { [weak self] in
-                content.action()
-                self?.dismiss()
-            })
+            ToastView(
+                content: content,
+                onUndo: { [weak self] in
+                    content.action()
+                    self?.dismiss()
+                },
+                onHover: { [weak self] hovering in
+                    if hovering { self?.dismissal?.cancel() } else { self?.startCountdown() }
+                }
+            )
             .frame(width: Self.size.width, height: Self.size.height)
         )
         position(panel)
@@ -40,11 +50,8 @@ final class ToastPresenter {
             panel.animator().alphaValue = 1
         }
 
-        dismissal = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(6))
-            guard !Task.isCancelled else { return }
-            self?.dismiss()
-        }
+        announce("\(content.message). \(content.actionLabel) available.")
+        startCountdown()
     }
 
     func dismiss() {
@@ -57,6 +64,26 @@ final class ToastPresenter {
             // The completion handler is delivered on the main thread.
             MainActor.assumeIsolated { panel?.orderOut(nil) }
         })
+    }
+
+    private func startCountdown() {
+        dismissal?.cancel()
+        dismissal = Task { [weak self] in
+            try? await Task.sleep(for: Self.lifetime)
+            guard !Task.isCancelled else { return }
+            self?.dismiss()
+        }
+    }
+
+    private func announce(_ message: String) {
+        NSAccessibility.post(
+            element: NSApp as Any,
+            notification: .announcementRequested,
+            userInfo: [
+                .announcement: message,
+                .priority: NSAccessibilityPriorityLevel.high.rawValue
+            ]
+        )
     }
 
     private func makePanel() -> NSPanel {
@@ -90,12 +117,14 @@ final class ToastPresenter {
 private struct ToastView: View {
     let content: ToastContent
     let onUndo: () -> Void
+    let onHover: (Bool) -> Void
 
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.title3)
                 .foregroundStyle(.tint)
+                .accessibilityHidden(true)
             Text(content.message)
                 .font(.system(.callout, design: .rounded, weight: .medium))
                 .lineLimit(2)
@@ -109,5 +138,6 @@ private struct ToastView: View {
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
         .glassEffect(.regular, in: .rect(cornerRadius: 16))
+        .onHover(perform: onHover)
     }
 }

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04D615BDF7E2B361A125F175 /* AudioRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60F6D55C714220C6754FF200 /* AudioRouting.swift */; };
+		134FB8821FFC4CA2CCBA324E /* SmartMomentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F09458439F9DDC0F1D9F1C /* SmartMomentsTests.swift */; };
+		1830C3666CE3020EF51AAFFC /* SimplyCoreAudio in Frameworks */ = {isa = PBXBuildFile; productRef = 2350BA0B29948EAE0E8DFE99 /* SimplyCoreAudio */; };
 		2282D69B24E90FC2E516C2ED /* DeviceRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5C271BD0B1175137EB7B202 /* DeviceRow.swift */; };
 		229AF1435F37261B02CBE0BA /* MenuContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08E3353C615E8ACFD93F980A /* MenuContentView.swift */; };
 		24256A7802059299C57409E7 /* SuggestionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972CDDA84BFD506CE283F7D5 /* SuggestionCard.swift */; };
@@ -25,12 +28,25 @@
 		707476318627E8C29D4592D0 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83C6F8FE2D981D1C3682B033 /* SettingsView.swift */; };
 		73490D2AEA08FA186A90871E /* DeviceKind.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF01547DF4E4C1AAA554C5A7 /* DeviceKind.swift */; };
 		89914D2B46B530267BF68F3F /* SmartMoment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD128F5FADE006444B849A5 /* SmartMoment.swift */; };
+		89B9A38C44957FA5F16FF603 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BC5E2FF433AC8FA9849E3C36 /* PrivacyInfo.xcprivacy */; };
 		B6BC029B38468F4BDF8EEDB3 /* RightNowHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E61175711259A033D09E43D /* RightNowHeader.swift */; };
 		BFACDD26E044BCD36FF73F4C /* DeviceSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE06D3C4CA03ABE65E8DB061 /* DeviceSnapshot.swift */; };
+		C1B5DD0C713814128B5D2F94 /* Fakes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC1726F09094492E2336677 /* Fakes.swift */; };
 		C9A21BBFBE485DD77B1FA9A1 /* ToastContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CDBE2B39C0AB071FD36E23E /* ToastContent.swift */; };
+		CB49C51C2159CA328F7258F0 /* NamingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35FC690232C43415825D18E /* NamingTests.swift */; };
 		E7B1CB975BD9AD38FE79B002 /* LidSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E11BF13EA8AEB965757C93 /* LidSensor.swift */; };
 		FCAAA114A84DB0EF7858D0D7 /* FirstRunView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F566122447B346C8B55E70B3 /* FirstRunView.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8CD32383405FB1ED8BAF2623 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 257F3EC47FDD24FE42DAE10D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 69D0B5F94C1DAC40772DB625;
+			remoteInfo = Suzu;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		08E3353C615E8ACFD93F980A /* MenuContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuContentView.swift; sourceTree = "<group>"; };
@@ -40,20 +56,26 @@
 		48C120739C69E2EEF76A0BB1 /* LaunchAtLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLogin.swift; sourceTree = "<group>"; };
 		49DC60D95FEB49136E83A099 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		49F640D49502482E62DE10AA /* Version.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Version.xcconfig; sourceTree = "<group>"; };
+		60F6D55C714220C6754FF200 /* AudioRouting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRouting.swift; sourceTree = "<group>"; };
 		654D35EC654EA29B8D52267A /* AudioController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioController.swift; sourceTree = "<group>"; };
 		7C2570DD135D64E8AE163625 /* SmartMomentsEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartMomentsEngine.swift; sourceTree = "<group>"; };
 		7E61175711259A033D09E43D /* RightNowHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightNowHeader.swift; sourceTree = "<group>"; };
 		83C6F8FE2D981D1C3682B033 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		880BBA3D87FA84A40E47A091 /* SuzuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SuzuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FF2ACFFEF58D9EC941C989A /* ToastPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastPresenter.swift; sourceTree = "<group>"; };
 		95E11BF13EA8AEB965757C93 /* LidSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LidSensor.swift; sourceTree = "<group>"; };
 		972CDDA84BFD506CE283F7D5 /* SuggestionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestionCard.swift; sourceTree = "<group>"; };
 		9A6D29ABCB11ABF6892B4A2D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A980752148FBEF98A8D0CE6C /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
+		AAC1726F09094492E2336677 /* Fakes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fakes.swift; sourceTree = "<group>"; };
 		AF01547DF4E4C1AAA554C5A7 /* DeviceKind.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceKind.swift; sourceTree = "<group>"; };
+		BC5E2FF433AC8FA9849E3C36 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		BCD128F5FADE006444B849A5 /* SmartMoment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartMoment.swift; sourceTree = "<group>"; };
 		BE06D3C4CA03ABE65E8DB061 /* DeviceSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSnapshot.swift; sourceTree = "<group>"; };
 		BFD00223F5BE652183721C1D /* MenuFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuFooter.swift; sourceTree = "<group>"; };
+		D35FC690232C43415825D18E /* NamingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingTests.swift; sourceTree = "<group>"; };
 		DD5A357B1D9F46B294860F81 /* SuzuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuzuApp.swift; sourceTree = "<group>"; };
+		E4F09458439F9DDC0F1D9F1C /* SmartMomentsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartMomentsTests.swift; sourceTree = "<group>"; };
 		E5C271BD0B1175137EB7B202 /* DeviceRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceRow.swift; sourceTree = "<group>"; };
 		F566122447B346C8B55E70B3 /* FirstRunView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunView.swift; sourceTree = "<group>"; };
 		FBF01F6ACD6C0756E3FE4FE2 /* Copy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Copy.swift; sourceTree = "<group>"; };
@@ -68,6 +90,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C8CF2C984A6DFEBF24B050C6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1830C3666CE3020EF51AAFFC /* SimplyCoreAudio in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -75,6 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				654D35EC654EA29B8D52267A /* AudioController.swift */,
+				60F6D55C714220C6754FF200 /* AudioRouting.swift */,
 				AF01547DF4E4C1AAA554C5A7 /* DeviceKind.swift */,
 				BE06D3C4CA03ABE65E8DB061 /* DeviceSnapshot.swift */,
 			);
@@ -110,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				475CD552638D81BD5422D270 /* Suzu.app */,
+				880BBA3D87FA84A40E47A091 /* SuzuTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -134,6 +166,16 @@
 			path = System;
 			sourceTree = "<group>";
 		};
+		BFA76DFC05C66C9EEB762DB6 /* SuzuTests */ = {
+			isa = PBXGroup;
+			children = (
+				AAC1726F09094492E2336677 /* Fakes.swift */,
+				D35FC690232C43415825D18E /* NamingTests.swift */,
+				E4F09458439F9DDC0F1D9F1C /* SmartMomentsTests.swift */,
+			);
+			path = SuzuTests;
+			sourceTree = "<group>";
+		};
 		DCDC4CA003E8E5EFCB190E55 /* Suzu */ = {
 			isa = PBXGroup;
 			children = (
@@ -143,6 +185,7 @@
 				BA984537A4664DFFE4EC50D2 /* System */,
 				32BA74B6FA332259374AA93A /* Views */,
 				9A6D29ABCB11ABF6892B4A2D /* Assets.xcassets */,
+				BC5E2FF433AC8FA9849E3C36 /* PrivacyInfo.xcprivacy */,
 				DD5A357B1D9F46B294860F81 /* SuzuApp.swift */,
 				49F640D49502482E62DE10AA /* Version.xcconfig */,
 			);
@@ -153,6 +196,7 @@
 			isa = PBXGroup;
 			children = (
 				DCDC4CA003E8E5EFCB190E55 /* Suzu */,
+				BFA76DFC05C66C9EEB762DB6 /* SuzuTests */,
 				92288E3873D335712338D5BC /* Products */,
 			);
 			sourceTree = "<group>";
@@ -180,6 +224,26 @@
 			productReference = 475CD552638D81BD5422D270 /* Suzu.app */;
 			productType = "com.apple.product-type.application";
 		};
+		CCEB235F70FDC8C391002764 /* SuzuTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A6346CAAC2796CB633DA6FAE /* Build configuration list for PBXNativeTarget "SuzuTests" */;
+			buildPhases = (
+				D83A26028C607B59AD089BAF /* Sources */,
+				C8CF2C984A6DFEBF24B050C6 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5EA3694B905A5DD95878F806 /* PBXTargetDependency */,
+			);
+			name = SuzuTests;
+			packageProductDependencies = (
+				2350BA0B29948EAE0E8DFE99 /* SimplyCoreAudio */,
+			);
+			productName = SuzuTests;
+			productReference = 880BBA3D87FA84A40E47A091 /* SuzuTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -190,6 +254,9 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					69D0B5F94C1DAC40772DB625 = {
+						ProvisioningStyle = Automatic;
+					};
+					CCEB235F70FDC8C391002764 = {
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -212,6 +279,7 @@
 			projectRoot = "";
 			targets = (
 				69D0B5F94C1DAC40772DB625 /* Suzu */,
+				CCEB235F70FDC8C391002764 /* SuzuTests */,
 			);
 		};
 /* End PBXProject section */
@@ -222,6 +290,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				45BFFC66DCC9A7AE8EFCCD69 /* Assets.xcassets in Resources */,
+				89B9A38C44957FA5F16FF603 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,6 +302,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4E7319E4EDAF25AAC53DBCEE /* AudioController.swift in Sources */,
+				04D615BDF7E2B361A125F175 /* AudioRouting.swift in Sources */,
 				26285AEC85604CAE84976357 /* Copy.swift in Sources */,
 				73490D2AEA08FA186A90871E /* DeviceKind.swift in Sources */,
 				576262707FE01B7C7596DED2 /* DeviceNaming.swift in Sources */,
@@ -256,7 +326,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D83A26028C607B59AD089BAF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C1B5DD0C713814128B5D2F94 /* Fakes.swift in Sources */,
+				CB49C51C2159CA328F7258F0 /* NamingTests.swift in Sources */,
+				134FB8821FFC4CA2CCBA324E /* SmartMomentsTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5EA3694B905A5DD95878F806 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 69D0B5F94C1DAC40772DB625 /* Suzu */;
+			targetProxy = 8CD32383405FB1ED8BAF2623 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		6A35FFDF5B7980B138E01F18 /* Release */ = {
@@ -428,6 +516,42 @@
 			};
 			name = Release;
 		};
+		C194650A354045270BA95D12 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.ugfugl.suzu.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Suzu.app/Contents/MacOS/Suzu";
+			};
+			name = Release;
+		};
+		F0183BB480AB06E1A8745338 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.ugfugl.suzu.tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Suzu.app/Contents/MacOS/Suzu";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -449,6 +573,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		A6346CAAC2796CB633DA6FAE /* Build configuration list for PBXNativeTarget "SuzuTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F0183BB480AB06E1A8745338 /* Debug */,
+				C194650A354045270BA95D12 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -463,6 +596,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		2350BA0B29948EAE0E8DFE99 /* SimplyCoreAudio */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 190DC80559F797A25D09722F /* XCRemoteSwiftPackageReference "SimplyCoreAudio" */;
+			productName = SimplyCoreAudio;
+		};
 		D0833025654CAC8B3B96E2D4 /* SimplyCoreAudio */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 190DC80559F797A25D09722F /* XCRemoteSwiftPackageReference "SimplyCoreAudio" */;

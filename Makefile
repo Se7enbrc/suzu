@@ -87,9 +87,11 @@ ensure-signing:
 	fi
 
 # One-time: build suzu's dedicated signing keychain from a Developer ID .p12.
-# Provide the .p12 + its export password either via env:
-#     P12_PATH=/path/to/DeveloperID.p12 P12_PASSWORD='...' make codesign-setup
-# or by putting P12_PATH=... and P12_PASSWORD=... lines in $(SUZU_CREDS) first.
+# Preferred (keeps the password out of shell history / ps): put these lines in
+# $(SUZU_CREDS) first, then run `make codesign-setup`:
+#     P12_PATH=/path/to/DeveloperID.p12
+#     P12_PASSWORD=...
+# Env also works: P12_PATH=... P12_PASSWORD='...' make codesign-setup
 # The keychain password is generated and stored in $(SUZU_CREDS) so signing can
 # re-unlock non-interactively from any session.
 codesign-setup:
@@ -106,14 +108,14 @@ codesign-setup:
 	  echo "  ✓ generated keychain password → $(SUZU_CREDS)"; \
 	fi; \
 	[ -f "$(SIGN_KEYCHAIN)" ] || { security create-keychain -p "$$KCPASS" "$(SIGN_KEYCHAIN)"; echo "  ✓ created $(notdir $(SIGN_KEYCHAIN))"; }; \
-	security set-keychain-settings "$(SIGN_KEYCHAIN)"; \
+	security set-keychain-settings -lut 3600 "$(SIGN_KEYCHAIN)"; \
 	security unlock-keychain -p "$$KCPASS" "$(SIGN_KEYCHAIN)"; \
 	if ! security find-identity -p codesigning "$(SIGN_KEYCHAIN)" 2>/dev/null | grep -q "Developer ID"; then \
-	  security import "$$P12" -k "$(SIGN_KEYCHAIN)" -P "$$P12PW" -T /usr/bin/codesign -T /usr/bin/security; \
+	  security import "$$P12" -k "$(SIGN_KEYCHAIN)" -P "$$P12PW" -T /usr/bin/codesign; \
 	  echo "  ✓ imported Developer ID"; \
 	else echo "  • Developer ID already present"; fi; \
 	security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$$KCPASS" "$(SIGN_KEYCHAIN)" >/dev/null; \
-	security list-keychains -d user -s "$(SIGN_KEYCHAIN)" $$(security list-keychains -d user | sed 's/[" ]//g'); \
+	security list-keychains -d user -s "$(SIGN_KEYCHAIN)" $$(security list-keychains -d user | sed 's/[" ]//g' | grep -v suzu-signing); \
 	echo "  ✓ suzu signing keychain ready (codesign authorized, non-interactive)"; \
 	security find-identity -v -p codesigning "$(SIGN_KEYCHAIN)" | grep "Developer ID" || true
 

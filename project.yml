@@ -49,3 +49,20 @@ targets:
         COMBINE_HIDPI_IMAGES: YES
     dependencies:
       - package: SimplyCoreAudio
+    scheme:
+      testTargets:
+        - SuzuTests
+
+  SuzuTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: SuzuTests
+    dependencies:
+      - target: Suzu
+      - package: SimplyCoreAudio
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.ugfugl.suzu.tests
+        GENERATE_INFOPLIST_FILE: YES

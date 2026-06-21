@@ -17,13 +17,14 @@ enum SmartMoment: String, CaseIterable, Identifiable, Sendable {
     var settingsTitle: String {
         switch self {
         case .headsetTogether: return "When a headset connects, use it for sound and mic"
-        case .backToSpeakers: return "When a headset disconnects, offer the built-in speakers"
+        case .backToSpeakers: return "When a headset disconnects, offer the built-in speakers and mic"
         }
     }
 
     var enabledKey: String { "suzu.moment.\(rawValue).enabled" }
     var policyKey: String { "suzu.moment.\(rawValue).policy" }
     var declinesKey: String { "suzu.moment.\(rawValue).declines" }
+    var offersKey: String { "suzu.moment.\(rawValue).offers" }
 }
 
 /// What suzu does the next time a moment happens.

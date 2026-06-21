@@ -2,8 +2,9 @@
 //  DeviceKind.swift
 //
 //  Maps a device to the friendly SF Symbol that represents it in a row and in
-//  the menu-bar icon. The classification is deliberately coarse - just enough
-//  to pick the right little picture (headphones, a speaker, a display).
+//  the menu-bar icon. Name tokens settle the cases transport type can't:
+//  a Studio Display connects over Thunderbolt (not HDMI), and a USB speakerphone
+//  has a mic but isn't a headset.
 
 import SimplyCoreAudio
 
@@ -28,21 +29,23 @@ enum DeviceKind: Sendable {
         }
     }
 
-    static func classify(transport: TransportType?, hasInput: Bool, hasOutput: Bool) -> DeviceKind {
-        switch transport {
-        case .builtIn:
-            return hasOutput ? .builtInSpeakers : .builtInMic
-        case .bluetooth, .bluetoothLE:
+    static func classify(transport: TransportType?, hasInput: Bool, hasOutput: Bool, name: String) -> DeviceKind {
+        if transport == .builtIn { return hasOutput ? .builtInSpeakers : .builtInMic }
+
+        // Name tokens win - the speakerphone case is knowingly approximate.
+        let lower = name.lowercased()
+        if lower.contains("display") || lower.contains("monitor") { return .display }
+        if lower.contains("airpod") || lower.contains("headphone") || lower.contains("headset") || lower.contains("buds") {
             return .headphones
-        case .usb:
-            // A USB device with a mic is a headset; output-only is a speaker.
-            return hasInput ? .headphones : .external
-        case .hdmi, .displayPort:
-            return .display
-        case .airPlay, .thunderbolt, .pci, .fireWire, .avb, .network:
-            return .external
-        default:
-            return hasOutput ? .external : .unknown
+        }
+        if lower.contains("speak") || lower.contains("conf") { return .external }
+
+        switch transport {
+        case .bluetooth, .bluetoothLE: return .headphones
+        case .usb: return .external            // unknown USB audio: a neutral speaker, not "headphones"
+        case .hdmi, .displayPort: return .display
+        case .airPlay, .thunderbolt, .pci, .fireWire, .avb, .network: return .external
+        default: return hasOutput ? .external : .unknown
         }
     }
 }

@@ -3,8 +3,9 @@
 //
 //  One device, SoundSource-style: a device-appropriate symbol, the friendly
 //  name, and a checkmark when it's the current one. The current row is
-//  unmistakably highlighted so there's never any hunting for "where am I now".
-//  No glass here - rows are the content layer.
+//  unmistakably highlighted - by tint, a checkmark, and a VoiceOver "selected"
+//  trait, never colour alone - so there's never any hunting for "where am I
+//  now". No glass here: rows are the content layer.
 
 import SwiftUI
 
@@ -14,6 +15,7 @@ struct DeviceRow: View {
     let action: () -> Void
 
     @State private var hovering = false
+    @Environment(\.colorSchemeContrast) private var contrast
 
     var body: some View {
         Button(action: action) {
@@ -22,9 +24,9 @@ struct DeviceRow: View {
                     .font(.system(size: 15))
                     .frame(width: 22)
                     .foregroundStyle(isCurrent ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
+                    .accessibilityHidden(true)
                 Text(device.name)
                     .font(.system(.body, design: .rounded))
-                    .fontWeight(isCurrent ? .semibold : .regular)
                     .lineLimit(1)
                     .truncationMode(.middle)
                 Spacer(minLength: 8)
@@ -32,6 +34,7 @@ struct DeviceRow: View {
                     Image(systemName: "checkmark")
                         .font(.system(size: 12, weight: .bold))
                         .foregroundStyle(.tint)
+                        .accessibilityHidden(true)
                 }
             }
             .padding(.horizontal, 10)
@@ -42,10 +45,17 @@ struct DeviceRow: View {
         }
         .buttonStyle(.plain)
         .onHover { hovering = $0 }
+        .accessibilityLabel(isCurrent ? "\(device.name), current" : device.name)
+        .accessibilityHint(isCurrent ? "" : "Switches to this device")
+        .accessibilityAddTraits(isCurrent ? [.isButton, .isSelected] : .isButton)
     }
 
     private var rowBackground: AnyShapeStyle {
-        if isCurrent { return AnyShapeStyle(Color.accentColor.opacity(0.15)) }
+        if isCurrent {
+            // Stronger fill when Increase Contrast is on, so the highlight never
+            // washes out against vibrancy or a busy wallpaper.
+            return AnyShapeStyle(Color.accentColor.opacity(contrast == .increased ? 0.32 : 0.16))
+        }
         if hovering { return AnyShapeStyle(Color.primary.opacity(0.06)) }
         return AnyShapeStyle(Color.clear)
     }

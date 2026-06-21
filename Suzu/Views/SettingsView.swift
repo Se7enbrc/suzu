@@ -2,8 +2,9 @@
 //  SettingsView.swift
 //
 //  A small, calm window. Just the Smart Moment toggles in plain English, a
-//  launch-at-login switch, and an about. Glass chrome (the window), plain
-//  content. Resist every urge to add a tab.
+//  launch-at-login switch (which reflects the real login-item status), and an
+//  about. Glass chrome (the window), plain content. Resist every urge to add a
+//  tab.
 
 import SwiftUI
 
@@ -11,8 +12,6 @@ struct SettingsView: View {
     @Environment(Preferences.self) private var prefs
 
     var body: some View {
-        @Bindable var prefs = prefs
-
         Form {
             Section {
                 VStack(alignment: .leading, spacing: 2) {
@@ -23,6 +22,7 @@ struct SettingsView: View {
                         .foregroundStyle(.secondary)
                 }
                 .padding(.vertical, 4)
+                .accessibilityElement(children: .combine)
             }
 
             Section(Copy.smartHeading) {
@@ -35,7 +35,10 @@ struct SettingsView: View {
             }
 
             Section {
-                Toggle(Copy.launchAtLogin, isOn: $prefs.launchAtLogin)
+                Toggle(Copy.launchAtLogin, isOn: Binding(
+                    get: { prefs.launchAtLogin },
+                    set: { prefs.setLaunchAtLogin($0) }
+                ))
             }
 
             Section(Copy.aboutHeading) {
@@ -47,6 +50,8 @@ struct SettingsView: View {
         }
         .formStyle(.grouped)
         .frame(width: 420, height: 380)
+        // A change made in System Settings should show up here.
+        .onAppear { prefs.refreshLaunchAtLogin() }
     }
 
     private static var versionString: String {
