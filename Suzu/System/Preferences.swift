@@ -25,6 +25,9 @@ final class Preferences {
     var backToSpeakersEnabled: Bool {
         didSet { store.set(backToSpeakersEnabled, forKey: SmartMoment.backToSpeakers.enabledKey) }
     }
+    var favoriteReturnedEnabled: Bool {
+        didSet { store.set(favoriteReturnedEnabled, forKey: SmartMoment.favoriteReturned.enabledKey) }
+    }
 
     /// Reflects the real login-item status. Updated only by the two methods
     /// below, never blindly written on launch.
@@ -34,13 +37,17 @@ final class Preferences {
         self.store = store
         store.register(defaults: [
             SmartMoment.headsetTogether.enabledKey: true,
-            SmartMoment.backToSpeakers.enabledKey: true
+            SmartMoment.backToSpeakers.enabledKey: true,
+            SmartMoment.favoriteReturned.enabledKey: true
         ])
         firstRunComplete = store.bool(forKey: Key.firstRun)
         didConfigureLogin = store.bool(forKey: Key.didConfigureLogin)
         headsetTogetherEnabled = store.bool(forKey: SmartMoment.headsetTogether.enabledKey)
         backToSpeakersEnabled = store.bool(forKey: SmartMoment.backToSpeakers.enabledKey)
+        favoriteReturnedEnabled = store.bool(forKey: SmartMoment.favoriteReturned.enabledKey)
         launchAtLogin = LaunchAtLogin.isEnabled
+        preferredOutputs = store.stringArray(forKey: Key.preferredOutputs) ?? []
+        preferredInputs = store.stringArray(forKey: Key.preferredInputs) ?? []
     }
 
     // MARK: - Launch at login (mirrors SMAppService)
@@ -62,6 +69,7 @@ final class Preferences {
         switch moment {
         case .headsetTogether: return headsetTogetherEnabled
         case .backToSpeakers: return backToSpeakersEnabled
+        case .favoriteReturned: return favoriteReturnedEnabled
         }
     }
 
@@ -69,6 +77,7 @@ final class Preferences {
         switch moment {
         case .headsetTogether: headsetTogetherEnabled = on
         case .backToSpeakers: backToSpeakersEnabled = on
+        case .favoriteReturned: favoriteReturnedEnabled = on
         }
         // Turning a moment back on clears its "no thanks" memory.
         if on { setPolicy(moment, .ask); resetDeclines(moment) }
@@ -100,8 +109,38 @@ final class Preferences {
     func offers(_ moment: SmartMoment) -> Int { store.integer(forKey: moment.offersKey) }
     func recordOffer(_ moment: SmartMoment) { store.set(offers(moment) + 1, forKey: moment.offersKey) }
 
+    // MARK: - Preferred devices (most-recently chosen first)
+
+    /// The output/input devices the user has *deliberately* chosen, newest first.
+    /// Auto-fallbacks are never recorded here, so a temporary "back to built-in"
+    /// never erases "I prefer the dock speakers". Drives the favourite-returned
+    /// moment when a remembered device reconnects.
+    @ObservationIgnored private(set) var preferredOutputs: [String]
+    @ObservationIgnored private(set) var preferredInputs: [String]
+
+    private static let preferredCap = 10
+
+    func recordPreferredOutput(_ uid: String) {
+        preferredOutputs = Self.promote(uid, in: preferredOutputs)
+        store.set(preferredOutputs, forKey: Key.preferredOutputs)
+    }
+
+    func recordPreferredInput(_ uid: String) {
+        preferredInputs = Self.promote(uid, in: preferredInputs)
+        store.set(preferredInputs, forKey: Key.preferredInputs)
+    }
+
+    func isPreferredOutput(_ uid: String) -> Bool { preferredOutputs.contains(uid) }
+    func isPreferredInput(_ uid: String) -> Bool { preferredInputs.contains(uid) }
+
+    private static func promote(_ uid: String, in list: [String]) -> [String] {
+        Array(([uid] + list.filter { $0 != uid }).prefix(preferredCap))
+    }
+
     private enum Key {
         static let firstRun = "suzu.firstRunComplete"
         static let didConfigureLogin = "suzu.didConfigureLogin"
+        static let preferredOutputs = "suzu.preferredOutputs"
+        static let preferredInputs = "suzu.preferredInputs"
     }
 }

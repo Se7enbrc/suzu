@@ -71,7 +71,13 @@ final class SmartMomentsEngine {
     // MARK: - Reacting to the world
 
     func handle(_ change: WorldChange) {
-        // A headset arriving (sound + mic) is the headline moment; it wins.
+        // A device you've used before reconnecting wins - restore it (this also
+        // covers a remembered headset, for both sound and mic at once).
+        if let returning = change.added.first(where: { prefs.isPreferredOutput($0.uid) || prefs.isPreferredInput($0.uid) }),
+           considerFavorite(returning) {
+            return
+        }
+        // A new headset arriving (sound + mic) is the next headline moment.
         if let headset = change.added.first(where: { $0.hasInput && $0.hasOutput }) {
             considerHeadset(headset)
             return
@@ -85,6 +91,30 @@ final class SmartMomentsEngine {
         if !change.removed.isEmpty {
             considerBackToSpeakers()
         }
+    }
+
+    /// A remembered device reconnected. Restore it for whichever role(s) it's
+    /// preferred in and isn't already current - both at once for a headset.
+    /// Returns whether it handled the device (so the caller stops here).
+    private func considerFavorite(_ device: DeviceSnapshot) -> Bool {
+        let moment = SmartMoment.favoriteReturned
+        guard prefs.isEnabled(moment) else { return false }
+
+        let outUID = (device.hasOutput && prefs.isPreferredOutput(device.uid) && audio.currentOutput?.uid != device.uid) ? device.uid : nil
+        let inUID = (device.hasInput && prefs.isPreferredInput(device.uid) && audio.currentInput?.uid != device.uid) ? device.uid : nil
+        guard outUID != nil || inUID != nil else { return false }
+
+        offer(Suggestion(
+            moment: moment,
+            title: Copy.favoriteTitle(device.name),
+            actionLabel: Copy.favoriteAction,
+            dismissLabel: Copy.headsetDismiss,
+            confirmName: device.name,
+            targetOutputUID: outUID,
+            targetInputUID: inUID,
+            showAlways: true
+        ))
+        return true
     }
 
     private func considerHeadset(_ headset: DeviceSnapshot) {
@@ -129,7 +159,7 @@ final class SmartMomentsEngine {
             confirmName: confirmName,
             targetOutputUID: needOutput ? speakers.uid : nil,
             targetInputUID: micTarget,
-            showAlways: prefs.offers(moment) > 0
+            showAlways: true
         ))
     }
 
@@ -210,6 +240,9 @@ final class SmartMomentsEngine {
         let applied = audio.currentRoute
 
         guard silent else {
+            // An explicit acceptance is a deliberate choice - remember it.
+            if let uid = suggestion.targetOutputUID { prefs.recordPreferredOutput(uid) }
+            if let uid = suggestion.targetInputUID { prefs.recordPreferredInput(uid) }
             Announce.say(Copy.switched(to: suggestion.confirmName))
             return
         }

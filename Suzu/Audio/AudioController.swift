@@ -30,6 +30,11 @@ final class AudioController: AudioRouting {
     /// or a default we didn't set), never for our own routing or the baseline.
     @ObservationIgnored var onWorldChanged: ((WorldChange) -> Void)?
 
+    /// Called when the user *deliberately* picks a device from the menu, so it
+    /// can be remembered as preferred. Not called for automatic routing.
+    @ObservationIgnored var onUserChoseOutput: ((String) -> Void)?
+    @ObservationIgnored var onUserChoseInput: ((String) -> Void)?
+
     @ObservationIgnored private let coreAudio = SimplyCoreAudio()
     @ObservationIgnored private var observers: [NSObjectProtocol] = []
     @ObservationIgnored private var knownByUID: [String: DeviceSnapshot] = [:]
@@ -151,15 +156,15 @@ final class AudioController: AudioRouting {
     // MARK: - Actions
 
     func selectOutput(_ uid: String) {
-        if route(outputUID: uid, inputUID: nil), let name = currentOutput?.name {
-            Announce.say(Copy.soundOn(name))
-        }
+        guard route(outputUID: uid, inputUID: nil) else { return }
+        if let name = currentOutput?.name { Announce.say(Copy.soundOn(name)) }
+        onUserChoseOutput?(uid)
     }
 
     func selectInput(_ uid: String) {
-        if route(outputUID: nil, inputUID: uid), let name = currentInput?.name {
-            Announce.say(Copy.micOn(name))
-        }
+        guard route(outputUID: nil, inputUID: uid) else { return }
+        if let name = currentInput?.name { Announce.say(Copy.micOn(name)) }
+        onUserChoseInput?(uid)
     }
 
     /// Sets either default (or both) by UID, atomically: if any leg fails, the

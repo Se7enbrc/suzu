@@ -26,6 +26,9 @@ struct SuzuApp: App {
         let audio = AudioController()
         let moments = SmartMomentsEngine(audio: audio, prefs: prefs)
         audio.onWorldChanged = { [weak moments] change in moments?.handle(change) }
+        // Remember the devices the user deliberately picks from the menu.
+        audio.onUserChoseOutput = { prefs.recordPreferredOutput($0) }
+        audio.onUserChoseInput = { prefs.recordPreferredInput($0) }
 
         _prefs = State(initialValue: prefs)
         _audio = State(initialValue: audio)

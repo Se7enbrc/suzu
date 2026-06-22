@@ -19,6 +19,10 @@ enum Copy {
     static let micTitle = "Use your Mac’s mic again?"
     static let micAction = "Use mic"
 
+    // Smart Moment: a device you've used before reconnects.
+    static func favoriteTitle(_ name: String) -> String { "Use \(name) again?" }
+    static let favoriteAction = "Use it"
+
     static let alwaysDoThis = "Always do this"
     static let alwaysHint = "Remember this choice and stop asking"
 

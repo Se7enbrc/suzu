@@ -15,6 +15,7 @@
 		229AF1435F37261B02CBE0BA /* MenuContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08E3353C615E8ACFD93F980A /* MenuContentView.swift */; };
 		24256A7802059299C57409E7 /* SuggestionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972CDDA84BFD506CE283F7D5 /* SuggestionCard.swift */; };
 		26285AEC85604CAE84976357 /* Copy.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBF01F6ACD6C0756E3FE4FE2 /* Copy.swift */; };
+		26FD06D6AC35B4CBFB1F9AFA /* FavoritesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F9F5867F01383A34F00820F /* FavoritesTests.swift */; };
 		295B98D8D5F65DA05130EFDB /* SimplyCoreAudio in Frameworks */ = {isa = PBXBuildFile; productRef = D0833025654CAC8B3B96E2D4 /* SimplyCoreAudio */; };
 		2E8EB92921F1A9661937C492 /* MenuFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFD00223F5BE652183721C1D /* MenuFooter.swift */; };
 		2F39B1B4365032EBE212BF1C /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49DC60D95FEB49136E83A099 /* Log.swift */; };
@@ -66,6 +67,7 @@
 		78C448BC8BDB750F1D548CF8 /* ReconcilerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReconcilerTests.swift; sourceTree = "<group>"; };
 		7C2570DD135D64E8AE163625 /* SmartMomentsEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartMomentsEngine.swift; sourceTree = "<group>"; };
 		7E61175711259A033D09E43D /* RightNowHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightNowHeader.swift; sourceTree = "<group>"; };
+		7F9F5867F01383A34F00820F /* FavoritesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesTests.swift; sourceTree = "<group>"; };
 		83C6F8FE2D981D1C3682B033 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		880BBA3D87FA84A40E47A091 /* SuzuTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SuzuTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8FF2ACFFEF58D9EC941C989A /* ToastPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastPresenter.swift; sourceTree = "<group>"; };
@@ -178,6 +180,7 @@
 			isa = PBXGroup;
 			children = (
 				AAC1726F09094492E2336677 /* Fakes.swift */,
+				7F9F5867F01383A34F00820F /* FavoritesTests.swift */,
 				D35FC690232C43415825D18E /* NamingTests.swift */,
 				78C448BC8BDB750F1D548CF8 /* ReconcilerTests.swift */,
 				E4F09458439F9DDC0F1D9F1C /* SmartMomentsTests.swift */,
@@ -342,6 +345,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C1B5DD0C713814128B5D2F94 /* Fakes.swift in Sources */,
+				26FD06D6AC35B4CBFB1F9AFA /* FavoritesTests.swift in Sources */,
 				CB49C51C2159CA328F7258F0 /* NamingTests.swift in Sources */,
 				069FBAFBA31A1B7C3B50A798 /* ReconcilerTests.swift in Sources */,
 				134FB8821FFC4CA2CCBA324E /* SmartMomentsTests.swift in Sources */,
