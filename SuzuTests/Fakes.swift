@@ -43,6 +43,5 @@ func makeSnapshot(_ uid: String, _ kind: DeviceKind, out: Bool = false, inp: Boo
 @MainActor
 func ephemeralPreferences() -> Preferences {
     let suite = UserDefaults(suiteName: "suzu.tests.\(UUID().uuidString)")!
-    suite.removePersistentDomain(forName: "suzu.tests")
     return Preferences(store: suite)
 }

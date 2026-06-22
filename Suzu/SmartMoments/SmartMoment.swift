@@ -17,7 +17,7 @@ enum SmartMoment: String, CaseIterable, Identifiable, Sendable {
     var settingsTitle: String {
         switch self {
         case .headsetTogether: return "When a headset connects, use it for sound and mic"
-        case .backToSpeakers: return "When a headset disconnects, offer the built-in speakers and mic"
+        case .backToSpeakers: return "When a headset disconnects, offer your Mac’s speakers and mic"
         }
     }
 

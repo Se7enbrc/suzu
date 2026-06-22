@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct RightNowHeader: View {
-    let rightNow: AudioController.RightNow
+    let rightNow: RightNow
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {

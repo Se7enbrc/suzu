@@ -71,10 +71,16 @@ final class SmartMomentsEngine {
     // MARK: - Reacting to the world
 
     func handle(_ change: WorldChange) {
-        // A headset arriving is the headline moment; it wins over the others.
+        // A headset arriving (sound + mic) is the headline moment; it wins.
         if let headset = change.added.first(where: { $0.hasInput && $0.hasOutput }) {
             considerHeadset(headset)
             return
+        }
+        // Observability: a headset whose input stream lags its output arrives
+        // output-only and misses the moment this event (rare; the debounce
+        // usually coalesces both streams into one change).
+        if change.added.contains(where: { $0.kind == .headphones && $0.hasOutput && !$0.hasInput }) {
+            Log.moments.info("headset-class device arrived output-only; mic not yet visible")
         }
         if !change.removed.isEmpty {
             considerBackToSpeakers()
@@ -112,12 +118,15 @@ final class SmartMomentsEngine {
         let micTarget = audio.currentInput == nil ? audio.builtInInput?.uid : nil
         guard needOutput || micTarget != nil else { return }
 
+        // Name the offer after what actually moves - don't say "speakers" when
+        // only the mic is changing.
+        let confirmName = needOutput ? speakers.name : (audio.builtInInput?.name ?? speakers.name)
         offer(Suggestion(
             moment: moment,
-            title: Copy.speakersTitle,
-            actionLabel: Copy.speakersAction,
+            title: needOutput ? Copy.speakersTitle : Copy.micTitle,
+            actionLabel: needOutput ? Copy.speakersAction : Copy.micAction,
             dismissLabel: Copy.speakersDismiss,
-            confirmName: speakers.name,
+            confirmName: confirmName,
             targetOutputUID: needOutput ? speakers.uid : nil,
             targetInputUID: micTarget,
             showAlways: prefs.offers(moment) > 0
@@ -158,12 +167,13 @@ final class SmartMomentsEngine {
         suggestion = nil
     }
 
-    // MARK: - The answers
+    // MARK: - The answers (act on the current card; idempotent against double-tap)
 
     /// "Use headset" / "Switch" - optionally with "Always do this" ticked. The
-    /// card vanishing and the row highlight moving are the confirmation, so the
-    /// explicit path shows no toast.
-    func accept(_ suggestion: Suggestion, always: Bool) {
+    /// card vanishing and the row highlight moving are the visual confirmation,
+    /// so the explicit path shows no toast (but does announce for VoiceOver).
+    func accept(always: Bool) {
+        guard let suggestion else { return }
         expiry?.cancel()
         self.suggestion = nil
         if always { prefs.setPolicy(suggestion.moment, .always) }
@@ -172,7 +182,8 @@ final class SmartMomentsEngine {
 
     /// "Not now" / "Stay" - suppress this launch, and self-disable if declined
     /// enough times.
-    func decline(_ suggestion: Suggestion) {
+    func decline() {
+        guard let suggestion else { return }
         expiry?.cancel()
         self.suggestion = nil
         suppressedThisSession.insert(suggestion.moment)
@@ -189,18 +200,27 @@ final class SmartMomentsEngine {
     private func perform(_ suggestion: Suggestion, silent: Bool) {
         let previous = audio.currentRoute
         guard audio.route(outputUID: suggestion.targetOutputUID, inputUID: suggestion.targetInputUID) else {
-            // The target vanished between the offer and now - don't lie about it.
+            // route() is atomic - nothing moved. Don't lie; on the explicit path
+            // give a calm, undo-less acknowledgement so the tap isn't swallowed.
             Log.moments.notice("route did not take for \(suggestion.moment.rawValue, privacy: .public)")
+            if !silent { presentToast(ToastContent(message: Copy.couldntSwitch, actionLabel: "", action: {})) }
             return
         }
         prefs.resetDeclines(suggestion.moment)
+        let applied = audio.currentRoute
 
-        // Only the silent (automatic) path needs a momentary undo note.
-        guard silent else { return }
+        guard silent else {
+            Announce.say(Copy.switched(to: suggestion.confirmName))
+            return
+        }
         presentToast(ToastContent(
             message: Copy.switched(to: suggestion.confirmName),
             actionLabel: Copy.undo,
-            action: { [weak audio] in _ = audio?.apply(previous) }
+            action: { [weak audio] in
+                // Don't override a deliberate choice the user has since made.
+                guard let audio, audio.currentRoute == applied else { return }
+                _ = audio.apply(previous)
+            }
         ))
     }
 }

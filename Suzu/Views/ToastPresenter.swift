@@ -6,8 +6,9 @@
 //  offers a single Undo, and fades out after a few seconds. It never steals
 //  focus. On show it posts a high-priority accessibility announcement, so the
 //  auto-switch and its Undo are perceivable to VoiceOver users, not just seen.
-//  Hovering the toast pauses the countdown, so reaching for Undo never races a
-//  fade. Glass here is legitimate - the panel floats over arbitrary content.
+//  Hovering the toast pauses the countdown and resumes the remaining time, so
+//  reaching for Undo never races a fade. Glass here is legitimate - the panel
+//  floats over arbitrary content.
 
 import AppKit
 import SwiftUI
@@ -20,11 +21,15 @@ final class ToastPresenter {
     private static let size = NSSize(width: 320, height: 64)
     private static let lifetime: Duration = .seconds(8)
 
+    private let clock = ContinuousClock()
     private var panel: NSPanel?
     private var dismissal: Task<Void, Never>?
+    private var deadline: ContinuousClock.Instant?
+    private var hovering = false
 
     func show(_ content: ToastContent) {
         dismissal?.cancel()
+        hovering = false
 
         let panel = panel ?? makePanel()
         self.panel = panel
@@ -36,9 +41,7 @@ final class ToastPresenter {
                     content.action()
                     self?.dismiss()
                 },
-                onHover: { [weak self] hovering in
-                    if hovering { self?.dismissal?.cancel() } else { self?.startCountdown() }
-                }
+                onHover: { [weak self] hovering in self?.setHovering(hovering) }
             )
             .frame(width: Self.size.width, height: Self.size.height)
         )
@@ -50,8 +53,8 @@ final class ToastPresenter {
             panel.animator().alphaValue = 1
         }
 
-        announce("\(content.message). \(content.actionLabel) available.")
-        startCountdown()
+        Announce.say(announcement(for: content), priority: .high)
+        startCountdown(Self.lifetime)
     }
 
     func dismiss() {
@@ -66,24 +69,30 @@ final class ToastPresenter {
         })
     }
 
-    private func startCountdown() {
+    private func setHovering(_ hovering: Bool) {
+        self.hovering = hovering
+        if hovering {
+            dismissal?.cancel()   // pause; the deadline is retained
+        } else if let deadline {
+            let remaining = clock.now.duration(to: deadline)
+            if remaining > .zero { startCountdown(remaining) } else { dismiss() }
+        } else {
+            startCountdown(Self.lifetime)
+        }
+    }
+
+    private func startCountdown(_ duration: Duration) {
         dismissal?.cancel()
+        deadline = clock.now.advanced(by: duration)
         dismissal = Task { [weak self] in
-            try? await Task.sleep(for: Self.lifetime)
+            try? await Task.sleep(for: duration)
             guard !Task.isCancelled else { return }
             self?.dismiss()
         }
     }
 
-    private func announce(_ message: String) {
-        NSAccessibility.post(
-            element: NSApp as Any,
-            notification: .announcementRequested,
-            userInfo: [
-                .announcement: message,
-                .priority: NSAccessibilityPriorityLevel.high.rawValue
-            ]
-        )
+    private func announcement(for content: ToastContent) -> String {
+        content.actionLabel.isEmpty ? content.message : "\(content.message). \(content.actionLabel) available."
     }
 
     private func makePanel() -> NSPanel {
@@ -130,9 +139,11 @@ private struct ToastView: View {
                 .lineLimit(2)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 4)
-            Button(content.actionLabel, action: onUndo)
-                .buttonStyle(.borderless)
-                .font(.system(.callout, design: .rounded, weight: .semibold))
+            if !content.actionLabel.isEmpty {
+                Button(content.actionLabel, action: onUndo)
+                    .buttonStyle(.glass)
+                    .font(.system(.callout, design: .rounded, weight: .semibold))
+            }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)

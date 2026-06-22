@@ -18,7 +18,7 @@ struct DeviceRow: View {
     @Environment(\.colorSchemeContrast) private var contrast
 
     var body: some View {
-        Button(action: action) {
+        let row = Button(action: action) {
             HStack(spacing: 10) {
                 Image(systemName: device.kind.symbol)
                     .font(.system(size: 15))
@@ -45,16 +45,21 @@ struct DeviceRow: View {
         }
         .buttonStyle(.plain)
         .onHover { hovering = $0 }
-        .accessibilityLabel(isCurrent ? "\(device.name), current" : device.name)
-        .accessibilityHint(isCurrent ? "" : "Switches to this device")
+        .accessibilityLabel(isCurrent ? Copy.deviceCurrent(device.name) : device.name)
         .accessibilityAddTraits(isCurrent ? [.isButton, .isSelected] : .isButton)
+
+        if isCurrent {
+            row
+        } else {
+            row.accessibilityHint(Copy.switchHint)
+        }
     }
 
     private var rowBackground: AnyShapeStyle {
         if isCurrent {
-            // Stronger fill when Increase Contrast is on, so the highlight never
-            // washes out against vibrancy or a busy wallpaper.
-            return AnyShapeStyle(Color.accentColor.opacity(contrast == .increased ? 0.32 : 0.16))
+            // Same tint as the checkmark; stronger fill when Increase Contrast is
+            // on, so the highlight never washes out against vibrancy.
+            return AnyShapeStyle(.tint.opacity(contrast == .increased ? 0.32 : 0.16))
         }
         if hovering { return AnyShapeStyle(Color.primary.opacity(0.06)) }
         return AnyShapeStyle(Color.clear)

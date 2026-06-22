@@ -55,7 +55,11 @@ struct SuzuApp: App {
                 .environment(moments)
                 .environment(prefs)
         } label: {
-            MenuBarLabel(symbol: audio.menuBarSymbol, pending: moments.hasPendingSuggestion)
+            MenuBarLabel(
+                symbol: audio.menuBarSymbol,
+                pending: moments.hasPendingSuggestion,
+                outputName: audio.currentOutput?.name
+            )
         }
         .menuBarExtraStyle(.window)
 
@@ -73,6 +77,7 @@ struct SuzuApp: App {
 private struct MenuBarLabel: View {
     let symbol: String
     let pending: Bool
+    let outputName: String?
 
     var body: some View {
         Image(systemName: symbol)
@@ -86,6 +91,10 @@ private struct MenuBarLabel: View {
                         .accessibilityHidden(true)
                 }
             }
+            // The dot is decorative; fold its meaning into the label + tooltip so
+            // VoiceOver and a mouse hover both surface a waiting suggestion.
+            .accessibilityLabel(Copy.menuBarLabel(output: outputName, pending: pending))
+            .help(Copy.menuBarLabel(output: outputName, pending: pending))
     }
 }
 

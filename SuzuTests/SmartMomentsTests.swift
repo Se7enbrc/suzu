@@ -2,7 +2,8 @@
 //  SmartMomentsTests.swift
 //
 //  The highest-value logic in the app: the ask / always / never state machine,
-//  the undo round-trip, success-gated routing, and the self-disable rule.
+//  the undo round-trip (incl. not overriding a later choice), success-gated
+//  routing with explicit-failure feedback, and the self-disable rule.
 
 import Testing
 @testable import Suzu
@@ -24,7 +25,8 @@ struct SmartMomentsTests {
         return (audio, headset)
     }
 
-    private func engine(_ audio: FakeAudioRouting, _ prefs: Preferences, toast: @escaping @MainActor (ToastContent) -> Void = { _ in }) -> SmartMomentsEngine {
+    private func makeEngine(_ audio: FakeAudioRouting, _ prefs: Preferences,
+                            toast: @escaping @MainActor (ToastContent) -> Void = { _ in }) -> SmartMomentsEngine {
         SmartMomentsEngine(audio: audio, prefs: prefs, presentToast: toast, lidIsOpen: { true }, offerLifetime: .seconds(60))
     }
 
@@ -33,14 +35,14 @@ struct SmartMomentsTests {
         prefs.setPolicy(.headsetTogether, .always)
         let (audio, headset) = headsetWorld()
         var toast: ToastContent?
-        let sut = engine(audio, prefs) { toast = $0 }
+        let sut = makeEngine(audio, prefs) { toast = $0 }
 
         sut.handle(WorldChange(added: [headset], removed: []))
 
         #expect(audio.currentOutputUID == "headset")
         #expect(audio.currentInputUID == "headset")
-        #expect(sut.suggestion == nil)   // silent path - no card
-        #expect(toast != nil)            // ...but a momentary undo note
+        #expect(sut.suggestion == nil)
+        #expect(toast?.actionLabel == Copy.undo)
     }
 
     @Test func undoRestoresThePreviousRoute() {
@@ -48,21 +50,34 @@ struct SmartMomentsTests {
         prefs.setPolicy(.headsetTogether, .always)
         let (audio, headset) = headsetWorld()
         var toast: ToastContent?
-        let sut = engine(audio, prefs) { toast = $0 }
+        let sut = makeEngine(audio, prefs) { toast = $0 }
 
         sut.handle(WorldChange(added: [headset], removed: []))
         #expect(audio.currentOutputUID == "headset")
-
-        toast?.action()   // Undo
+        toast?.action()
 
         #expect(audio.currentOutputUID == "speakers")
         #expect(audio.currentInputUID == "macmic")
     }
 
-    @Test func askPolicyPresentsACardAndChangesNothing() {
-        let prefs = ephemeralPreferences()   // defaults to .ask
+    @Test func undoIsANoOpAfterTheUserMovesOn() {
+        let prefs = ephemeralPreferences()
+        prefs.setPolicy(.headsetTogether, .always)
         let (audio, headset) = headsetWorld()
-        let sut = engine(audio, prefs)
+        var toast: ToastContent?
+        let sut = makeEngine(audio, prefs) { toast = $0 }
+
+        sut.handle(WorldChange(added: [headset], removed: []))
+        audio.route(outputUID: "speakers", inputUID: nil)   // user deliberately moves on
+        toast?.action()                                     // stale Undo
+
+        #expect(audio.currentOutputUID == "speakers")       // not reverted past the user's choice
+    }
+
+    @Test func askPolicyPresentsACardAndChangesNothing() {
+        let prefs = ephemeralPreferences()
+        let (audio, headset) = headsetWorld()
+        let sut = makeEngine(audio, prefs)
 
         sut.handle(WorldChange(added: [headset], removed: []))
 
@@ -70,20 +85,17 @@ struct SmartMomentsTests {
         #expect(audio.routeCalls.isEmpty)
     }
 
-    @Test func firstEncounterHidesAlwaysSecondShowsIt() {
+    @Test func acceptRoutesAndIsIdempotent() {
         let prefs = ephemeralPreferences()
         let (audio, headset) = headsetWorld()
-        let sut = engine(audio, prefs)
-
+        let sut = makeEngine(audio, prefs)
         sut.handle(WorldChange(added: [headset], removed: []))
-        #expect(sut.suggestion?.showAlways == false)
 
-        // A new session: dismiss this one, offer again.
-        if let first = sut.suggestion { sut.decline(first) }
-        let prefs2Audio = headsetWorld()
-        let sut2 = SmartMomentsEngine(audio: prefs2Audio.0, prefs: prefs, presentToast: { _ in }, lidIsOpen: { true })
-        sut2.handle(WorldChange(added: [prefs2Audio.1], removed: []))
-        #expect(sut2.suggestion?.showAlways == true)
+        sut.accept(always: false)
+        sut.accept(always: false)   // double-tap: no-op, card already gone
+
+        #expect(audio.currentOutputUID == "headset")
+        #expect(audio.routeCalls.count == 1)
     }
 
     @Test func failedRouteClaimsNoSuccess() {
@@ -92,50 +104,71 @@ struct SmartMomentsTests {
         let (audio, headset) = headsetWorld()
         audio.routeFails = true
         var toast: ToastContent?
-        let sut = engine(audio, prefs) { toast = $0 }
+        let sut = makeEngine(audio, prefs) { toast = $0 }
 
         sut.handle(WorldChange(added: [headset], removed: []))
 
-        #expect(toast == nil)            // no false confirmation
-        #expect(audio.currentOutputUID == "speakers")   // nothing actually moved
+        #expect(toast == nil)
+        #expect(audio.currentOutputUID == "speakers")
     }
 
-    @Test func threeDeclinesSelfDisableTheMoment() {
+    @Test func explicitAcceptFailureGivesFeedback() {
         let prefs = ephemeralPreferences()
-        let (audio, _) = headsetWorld()
-        let sut = engine(audio, prefs)
-        let suggestion = Suggestion(
-            moment: .headsetTogether, title: "", actionLabel: "", dismissLabel: "",
-            confirmName: "", targetOutputUID: "headset", targetInputUID: "headset", showAlways: false
-        )
+        let (audio, headset) = headsetWorld()
+        var toast: ToastContent?
+        let sut = makeEngine(audio, prefs) { toast = $0 }
+        sut.handle(WorldChange(added: [headset], removed: []))
 
-        sut.decline(suggestion)
-        sut.decline(suggestion)
-        #expect(prefs.isEnabled(.headsetTogether) == true)
-        sut.decline(suggestion)
+        audio.routeFails = true
+        sut.accept(always: false)
 
+        #expect(toast?.message == Copy.couldntSwitch)
+        #expect(toast?.actionLabel == "")   // no undo on a no-op
+    }
+
+    @Test func threeDeclinesAcrossSessionsSelfDisable() {
+        let prefs = ephemeralPreferences()
+        for round in 1...3 {
+            let (audio, headset) = headsetWorld()
+            let sut = makeEngine(audio, prefs)   // fresh session each time
+            sut.handle(WorldChange(added: [headset], removed: []))
+            #expect(sut.suggestion != nil)
+            sut.decline()
+            if round < 3 { #expect(prefs.isEnabled(.headsetTogether) == true) }
+        }
         #expect(prefs.isEnabled(.headsetTogether) == false)
         #expect(prefs.policy(.headsetTogether) == .never)
+    }
+
+    @Test func firstEncounterHidesAlwaysSecondShowsIt() {
+        let prefs = ephemeralPreferences()
+        let (audio1, headset1) = headsetWorld()
+        let sut1 = makeEngine(audio1, prefs)
+        sut1.handle(WorldChange(added: [headset1], removed: []))
+        #expect(sut1.suggestion?.showAlways == false)
+        sut1.decline()
+
+        let (audio2, headset2) = headsetWorld()
+        let sut2 = makeEngine(audio2, prefs)
+        sut2.handle(WorldChange(added: [headset2], removed: []))
+        #expect(sut2.suggestion?.showAlways == true)
     }
 
     @Test func backToSpeakersLeavesAStillValidMicAlone() {
         let prefs = ephemeralPreferences()
         prefs.setPolicy(.backToSpeakers, .always)
         let audio = FakeAudioRouting()
-        let speakers = makeSnapshot("speakers", .builtInSpeakers, out: true)
-        let mic = makeSnapshot("macmic", .builtInMic, inp: true)
-        let usbMic = makeSnapshot("usbmic", .external, inp: true)
-        audio.outputs = [speakers]
-        audio.inputs = [mic, usbMic]
-        audio.builtInOutput = speakers
-        audio.builtInInput = mic
-        audio.currentOutputUID = "gone-headset-output"   // fell back to a non-built-in
-        audio.currentInputUID = "usbmic"                 // a third mic, still present
-        let sut = engine(audio, prefs)
+        audio.outputs = [makeSnapshot("speakers", .builtInSpeakers, out: true)]
+        audio.inputs = [makeSnapshot("macmic", .builtInMic, inp: true), makeSnapshot("usbmic", .external, inp: true)]
+        audio.builtInOutput = audio.outputs[0]
+        audio.builtInInput = audio.inputs[0]
+        audio.currentOutputUID = "gone-headset-output"
+        audio.currentInputUID = "usbmic"
+        let sut = makeEngine(audio, prefs)
 
         sut.handle(WorldChange(added: [], removed: [makeSnapshot("headset", .headphones, out: true, inp: true)]))
 
         #expect(audio.routeCalls.last?.out == "speakers")
-        #expect(audio.routeCalls.last?.inp == nil)       // mic left untouched
+        #expect(audio.routeCalls.last?.inp == nil)
     }
 }

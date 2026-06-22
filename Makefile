@@ -39,8 +39,8 @@ DEVELOPER_ID ?= $(shell security find-identity -v -p codesigning 2>/dev/null | \
                   sed -n 's/.*"\(Developer ID Application: .*\)"/\1/p' | head -1)
 TEAM_ID      := $(shell printf '%s' '$(DEVELOPER_ID)' | sed -n 's/.*(\([A-Z0-9]\{10\}\))$$/\1/p')
 
-.PHONY: all generate build app run install test lint open clean \
-        codesign-setup codesign-teardown ensure-signing
+.PHONY: all generate build app run install test lint open clean distclean \
+        archive export-appstore codesign-setup codesign-teardown ensure-signing
 
 all: app
 
@@ -135,5 +135,23 @@ lint:
 open: generate
 	open $(PROJECT)
 
+# Mac App Store: archive, then export a .pkg for upload (Transporter/altool).
+# Requires the Apple ID in Xcode's accounts with an Apple Distribution cert and
+# an App Store provisioning profile for io.ugfugl.suzu. Not exercised locally -
+# the day-to-day build is `make app` (Developer ID). See docs/appstore.md.
+archive: generate
+	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration Release \
+	  -archivePath $(DERIVED)/$(APP_NAME).xcarchive archive
+
+export-appstore: archive
+	xcodebuild -exportArchive -archivePath $(DERIVED)/$(APP_NAME).xcarchive \
+	  -exportOptionsPlist build-support/ExportOptions-AppStore.plist \
+	  -exportPath $(DERIVED)/appstore
+
+# Keep the generated project (and its tracked Package.resolved); just drop build
+# output. `make distclean` also removes the generated project.
 clean:
-	rm -rf $(DERIVED) $(PROJECT)
+	rm -rf $(DERIVED)
+
+distclean: clean
+	rm -rf $(PROJECT)

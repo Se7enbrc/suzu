@@ -11,7 +11,7 @@
 import SimplyCoreAudio
 
 enum DeviceNaming {
-    static func friendly(rawName: String, transport: TransportType?) -> String {
+    static func friendly(rawName: String, transport: TransportType?, hasOutput: Bool) -> String {
         if transport == .builtIn {
             for token in ["Speakers", "Speaker"] where rawName.hasSuffix(token) {
                 let model = rawName.dropLast(token.count).trimmingCharacters(in: .whitespaces)
@@ -21,7 +21,8 @@ enum DeviceNaming {
                 let model = rawName.dropLast(token.count).trimmingCharacters(in: .whitespaces)
                 return model.isEmpty ? rawName : "\(model) mic"
             }
-            return rawName
+            // Built-in with no role word: append the role it actually plays.
+            return "\(rawName) \(hasOutput ? "speakers" : "mic")"
         }
         return stripPossessive(rawName)
     }
@@ -34,7 +35,10 @@ enum DeviceNaming {
         guard let space = name.firstIndex(of: " ") else { return name }
         let owner = name[..<space]
         let rest = name[name.index(after: space)...]
-        guard !rest.isEmpty else { return name }
+        // Only strip when a real device name follows (starts uppercase), so a
+        // contraction like "It's a Speaker" is left intact while "Robert's
+        // AirPods" is not.
+        guard let lead = rest.first, lead.isUppercase else { return name }
         for suffix in ["’s", "'s", "\u{02BC}s", "’S", "'S", "\u{02BC}S"] where owner.hasSuffix(suffix) {
             if owner.count > suffix.count { return String(rest) }
         }

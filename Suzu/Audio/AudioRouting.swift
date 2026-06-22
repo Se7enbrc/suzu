@@ -22,6 +22,12 @@ struct WorldChange: Sendable {
     var removed: [DeviceSnapshot]
 }
 
+/// Two lines (or one) describing where sound and mic are right now.
+struct RightNow: Equatable, Sendable {
+    var primary: String
+    var secondary: String?
+}
+
 /// The slice of the audio layer the Smart Moments engine needs. A protocol so
 /// the engine can run against an in-memory fake in tests, with no CoreAudio.
 @MainActor

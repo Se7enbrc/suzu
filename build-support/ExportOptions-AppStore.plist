@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Used by `make export-appstore`. Exports the archive re-signed for the
+	     Mac App Store. Requires the Apple ID in Xcode's accounts (Apple
+	     Distribution cert + an App Store provisioning profile for
+	     io.ugfugl.suzu); automatic signing lets Xcode fetch/create them. -->
+	<key>method</key>
+	<string>app-store-connect</string>
+	<key>destination</key>
+	<string>export</string>
+	<key>teamID</key>
+	<string>5T7M4RH3F8</string>
+	<key>signingStyle</key>
+	<string>automatic</string>
+</dict>
+</plist>

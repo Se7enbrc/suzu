@@ -18,25 +18,30 @@ struct MenuContentView: View {
     /// Beyond this many devices, the lists scroll instead of growing the popover.
     private static let scrollThreshold = 8
 
+    private var isEmpty: Bool { audio.outputs.isEmpty && audio.inputs.isEmpty }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             if let suggestion = moments.suggestion {
                 SuggestionCard(
                     suggestion: suggestion,
-                    onAccept: { moments.accept(suggestion, always: $0) },
-                    onDismiss: { moments.decline(suggestion) }
+                    onAccept: { moments.accept(always: $0) },
+                    onDismiss: { moments.decline() }
                 )
                 .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
             }
 
-            RightNowHeader(rightNow: audio.rightNow)
-
-            if audio.outputs.count + audio.inputs.count > Self.scrollThreshold {
-                ScrollView { deviceLists }
-                    .frame(height: 360)
-                    .scrollBounceBehavior(.basedOnSize)
+            if isEmpty {
+                emptyState
             } else {
-                deviceLists
+                RightNowHeader(rightNow: audio.rightNow)
+                if audio.outputs.count + audio.inputs.count > Self.scrollThreshold {
+                    ScrollView { deviceLists }
+                        .frame(height: 360)
+                        .scrollBounceBehavior(.basedOnSize)
+                } else {
+                    deviceLists
+                }
             }
 
             Divider()
@@ -51,6 +56,20 @@ struct MenuContentView: View {
         .animation(reduceMotion ? nil : .smooth, value: moments.suggestion)
         .animation(reduceMotion ? nil : .smooth, value: audio.currentOutputUID)
         .animation(reduceMotion ? nil : .smooth, value: audio.currentInputUID)
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 8) {
+            Image(systemName: "waveform.slash")
+                .font(.system(size: 26))
+                .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
+            Text(Copy.noDevices)
+                .font(.system(.callout, design: .rounded))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 18)
     }
 
     private var deviceLists: some View {
