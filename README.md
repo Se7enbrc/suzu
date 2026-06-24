@@ -17,8 +17,9 @@ is announced in plain language and can be undone.
   answer, and keep the silent version undoable.
   - *Headset arrives* → keep sound **and** mic on it together (macOS otherwise
     moves only one).
-  - *Headset leaves, lid open* → offer your Mac's speakers and mic back. (Quiet
-    when the lid is shut and you're docked.)
+  - *A device leaves* → land on something you know: a device you've chosen
+    before that's still connected, or your Mac's own speakers and mic when
+    you're using it directly.
   - *A favorite returns* → restore the device you last chose.
 
 The menu-bar icon mirrors where sound is going right now, so you can read your

@@ -138,29 +138,71 @@ final class SmartMomentsEngine {
     private func considerBackToSpeakers() {
         let moment = SmartMoment.backToSpeakers
         guard prefs.isEnabled(moment) else { return }
-        guard let speakers = audio.builtInOutput else { return }
-        // Don't offer the built-in speakers while docked with the lid shut.
-        if lidIsOpen() == false { return }
 
-        let needOutput = audio.currentOutput?.uid != speakers.uid
+        let outTarget = landingOutput()
         // Only move the mic if the current input is unresolved (its device left).
         // A still-present third mic (a USB interface, a desk mic) is left alone.
-        let micTarget = audio.currentInput == nil ? audio.builtInInput?.uid : nil
-        guard needOutput || micTarget != nil else { return }
+        let inTarget = audio.currentInput == nil ? landingInput() : nil
+        guard outTarget != nil || inTarget != nil else { return }
 
-        // Name the offer after what actually moves - don't say "speakers" when
-        // only the mic is changing.
-        let confirmName = needOutput ? speakers.name : (audio.builtInInput?.name ?? speakers.name)
+        // Name the offer after what actually moves: the Mac's own speakers/mic
+        // keep the familiar "back to your Mac" wording; a remembered device that's
+        // still here is phrased like a returning favourite.
+        let title: String, action: String, confirmName: String
+        if let outTarget {
+            let onMac = outTarget.uid == audio.builtInOutput?.uid
+            confirmName = outTarget.name
+            title = onMac ? Copy.speakersTitle : Copy.favoriteTitle(outTarget.name)
+            action = onMac ? Copy.speakersAction : Copy.favoriteAction
+        } else if let inTarget {
+            let onMac = inTarget.uid == audio.builtInInput?.uid
+            confirmName = inTarget.name
+            title = onMac ? Copy.micTitle : Copy.favoriteTitle(inTarget.name)
+            action = onMac ? Copy.micAction : Copy.favoriteAction
+        } else {
+            return
+        }
+
         offer(Suggestion(
             moment: moment,
-            title: needOutput ? Copy.speakersTitle : Copy.micTitle,
-            actionLabel: needOutput ? Copy.speakersAction : Copy.micAction,
+            title: title,
+            actionLabel: action,
             dismissLabel: Copy.speakersDismiss,
             confirmName: confirmName,
-            targetOutputUID: needOutput ? speakers.uid : nil,
-            targetInputUID: micTarget,
+            targetOutputUID: outTarget?.uid,
+            targetInputUID: inTarget?.uid,
             showAlways: true
         ))
+    }
+
+    /// Where sound should land when the current output device leaves. Lean on
+    /// remembered presence: a device you deliberately chose before that's still
+    /// connected (most recent first) beats the bare Mac. The Mac's own speakers
+    /// are the last resort - and never offered while clamshell-docked (lid shut),
+    /// where they're muffled and you plainly have an external setup suzu just
+    /// doesn't remember yet. Returns nil when you're already somewhere sensible.
+    private func landingOutput() -> DeviceSnapshot? {
+        // Already on your Mac, or a device you've chosen before? Leave it be.
+        if let current = audio.currentOutput,
+           current.uid == audio.builtInOutput?.uid || prefs.isPreferredOutput(current.uid) {
+            return nil
+        }
+        let builtIn = audio.builtInOutput?.uid
+        for uid in prefs.preferredOutputs where uid != builtIn {
+            if let dev = audio.outputs.first(where: { $0.uid == uid }) { return dev }
+        }
+        if lidIsOpen() != false { return audio.builtInOutput }
+        return nil
+    }
+
+    /// Where the mic should land when its device leaves: a remembered input that's
+    /// still here, else the Mac's own mic (which a closed lid never muffles).
+    private func landingInput() -> DeviceSnapshot? {
+        let builtIn = audio.builtInInput?.uid
+        for uid in prefs.preferredInputs where uid != builtIn {
+            if let dev = audio.inputs.first(where: { $0.uid == uid }) { return dev }
+        }
+        return audio.builtInInput
     }
 
     /// Route a fresh suggestion through the ask / always / never gate.

@@ -171,4 +171,62 @@ struct SmartMomentsTests {
         #expect(audio.routeCalls.last?.out == "speakers")
         #expect(audio.routeCalls.last?.inp == nil)
     }
+
+    @Test func backToSpeakersLandsOnARememberedDeviceThatsStillHere() {
+        let prefs = ephemeralPreferences()
+        prefs.setPolicy(.backToSpeakers, .always)
+        prefs.recordPreferredOutput("dock")          // a device you've chosen before
+        let audio = FakeAudioRouting()
+        audio.outputs = [makeSnapshot("speakers", .builtInSpeakers, out: true),
+                         makeSnapshot("dock", .external, out: true)]
+        audio.inputs = [makeSnapshot("macmic", .builtInMic, inp: true)]
+        audio.builtInOutput = audio.outputs[0]
+        audio.builtInInput = audio.inputs[0]
+        audio.currentOutputUID = "gone-headset"      // your current output just left
+        audio.currentInputUID = "macmic"
+        let sut = makeEngine(audio, prefs)
+
+        sut.handle(WorldChange(added: [], removed: [makeSnapshot("headset", .headphones, out: true)]))
+
+        #expect(audio.currentOutputUID == "dock")    // remembered + present beats the bare Mac
+    }
+
+    @Test func backToSpeakersStaysQuietClamshellWithNothingRemembered() {
+        let prefs = ephemeralPreferences()
+        prefs.setPolicy(.backToSpeakers, .always)
+        let audio = FakeAudioRouting()
+        audio.outputs = [makeSnapshot("speakers", .builtInSpeakers, out: true)]
+        audio.inputs = [makeSnapshot("macmic", .builtInMic, inp: true)]
+        audio.builtInOutput = audio.outputs[0]
+        audio.builtInInput = audio.inputs[0]
+        audio.currentOutputUID = "gone-headset"      // output device left
+        audio.currentInputUID = "macmic"             // mic still fine
+        let sut = SmartMomentsEngine(audio: audio, prefs: prefs, presentToast: { _ in },
+                                     lidIsOpen: { false }, offerLifetime: .seconds(60))
+
+        sut.handle(WorldChange(added: [], removed: [makeSnapshot("headset", .headphones, out: true)]))
+
+        #expect(audio.routeCalls.isEmpty)            // muffled clamshell speakers: stay quiet
+        #expect(sut.suggestion == nil)
+    }
+
+    @Test func backToSpeakersDoesntNagWhenYoureOnADeviceYouLike() {
+        let prefs = ephemeralPreferences()
+        prefs.setPolicy(.backToSpeakers, .always)
+        prefs.recordPreferredOutput("dock")
+        let audio = FakeAudioRouting()
+        audio.outputs = [makeSnapshot("speakers", .builtInSpeakers, out: true),
+                         makeSnapshot("dock", .external, out: true)]
+        audio.inputs = [makeSnapshot("macmic", .builtInMic, inp: true)]
+        audio.builtInOutput = audio.outputs[0]
+        audio.builtInInput = audio.inputs[0]
+        audio.currentOutputUID = "dock"              // already on a remembered device
+        audio.currentInputUID = "macmic"
+        let sut = makeEngine(audio, prefs)
+
+        sut.handle(WorldChange(added: [], removed: [makeSnapshot("usbmic", .external, inp: true)]))
+
+        #expect(audio.routeCalls.isEmpty)            // a different device left; you're fine
+        #expect(sut.suggestion == nil)
+    }
 }

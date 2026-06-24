@@ -8,7 +8,8 @@
 enum SmartMoment: String, CaseIterable, Identifiable, Sendable {
     /// A headset (sound *and* mic) arrives - keep both together on it.
     case headsetTogether
-    /// The current device left and the lid is open - offer the Mac's speakers/mic.
+    /// The current device left - land on a remembered device that's still here,
+    /// else the Mac's own speakers/mic.
     case backToSpeakers
     /// A device you've used before reconnected - offer to switch back to it.
     case favoriteReturned
@@ -19,7 +20,7 @@ enum SmartMoment: String, CaseIterable, Identifiable, Sendable {
     var settingsTitle: String {
         switch self {
         case .headsetTogether: return "When a headset connects, use it for sound and mic"
-        case .backToSpeakers: return "When a device disconnects, offer your Mac’s speakers and mic"
+        case .backToSpeakers: return "When a device disconnects, fall back to your Mac or one you’ve used"
         case .favoriteReturned: return "When a device I’ve used before reconnects, switch back to it"
         }
     }
