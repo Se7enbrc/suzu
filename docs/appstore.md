@@ -33,7 +33,7 @@ Answer in App Store Connect:
 ## App Review note (Guideline 2.4.5 / system audio)
 
 > suzu sets the user's **default** audio input/output device through the public
-> CoreAudio HAL — the same mechanism as System Settings > Sound. It never
+> CoreAudio HAL - the same mechanism as System Settings > Sound. It never
 > captures audio (no microphone entitlement), never touches the system-sounds
 > output, and every automatic switch shows a one-tap Undo. No private API is
 > used. Per-app routing is intentionally not implemented (it would require a

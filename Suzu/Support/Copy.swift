@@ -31,7 +31,7 @@ enum Copy {
     static func switched(to name: String) -> String { "Switched to \(name)" }
     static func soundOn(_ name: String) -> String { "Sound on \(name)" }
     static func micOn(_ name: String) -> String { "Mic on \(name)" }
-    static let couldntSwitch = "Couldn’t switch — that device just left"
+    static let couldntSwitch = "Couldn’t switch, that device just left"
 
     // Menu surface.
     static let soundSection = "Sound"
@@ -57,7 +57,7 @@ enum Copy {
     static let welcomeTitle = "Welcome to suzu"
     static let welcomeBody =
         "suzu keeps your sound and mic where you want them. Click the menu bar "
-        + "icon to see where they are, or to move them — every change can be undone."
+        + "icon to see where they are, or to move them. Every change can be undone."
     static let welcomeButton = "Get started"
 
     // Settings.

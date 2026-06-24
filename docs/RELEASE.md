@@ -4,7 +4,7 @@ suzu ships as a **Developer ID-signed, notarized** app that **auto-updates via
 Sparkle**. Updates are published to a GitHub Release and announced through an
 `appcast.xml` served by GitHub Pages.
 
-suzu's signing kit is **fully self-contained** — its own keychain
+suzu's signing kit is **fully self-contained** - its own keychain
 (`suzu-signing.keychain-db`), its own credentials file (`~/.config/suzu/signing.env`),
 its own notary profile (`suzu-notary`), and its own Sparkle keypair. The only
 thing shared with any other project is the Developer ID `.p12` itself (there is
@@ -28,7 +28,7 @@ make sparkle-keys        # mint the EdDSA update keypair; prints SUPublicEDKey
 
 Take the `SUPublicEDKey` value printed by `make sparkle-keys` and paste it into
 `Suzu/Info.plist` (replace the `__SET_BY_make_sparkle-keys__` placeholder). The
-**private** key is stored in the creds file — **back it up**; it is the root of
+**private** key is stored in the creds file - **back it up**; it is the root of
 update trust.
 
 ### GitHub side (one-time)
@@ -71,5 +71,5 @@ open build/dist          # the notarized .dmg
   Developer ID + notarized distribution but **not** for the Mac App Store; a MAS
   build would drop Sparkle and those entitlements (see `docs/appstore.md`).
 - `appcast.xml` is committed as a seed; `make release-publish` updates the
-  served copy directly via the GitHub API, so the working-tree copy can lag —
+  served copy directly via the GitHub API, so the working-tree copy can lag -
   re-pull before hand-editing.
