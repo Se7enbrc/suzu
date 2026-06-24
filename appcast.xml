@@ -5,5 +5,13 @@
     <link>https://se7enbrc.github.io/suzu/appcast.xml</link>
     <description>suzu auto-update feed</description>
     <language>en</language>
+    <item>
+      <title>2026.6.0</title>
+      <pubDate>Wed, 24 Jun 2026 09:14:59 -0400</pubDate>
+      <sparkle:version>20260624</sparkle:version>
+      <sparkle:shortVersionString>2026.6.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure url="https://github.com/Se7enbrc/suzu/releases/download/2026.6.0/Suzu-2026.6.0.zip" type="application/octet-stream" sparkle:edSignature="Etde6UlRhLcnjqjpQhRAbosndcnKZu5mPMOp1M7vQSJMaEB7tt9l0Dr87LdVg6HvuV6rrFGkDilYgGc2C11KBA==" length="1912876" />
+    </item>
   </channel>
 </rss>
