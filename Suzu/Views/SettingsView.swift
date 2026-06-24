@@ -43,6 +43,9 @@ struct SettingsView: View {
 
             Section(Copy.aboutHeading) {
                 LabeledContent("Version", value: Self.versionString)
+                #if canImport(Sparkle)
+                UpdaterSettingsRows()
+                #endif
                 Text(Self.copyrightString)
                     .font(.caption)
                     .foregroundStyle(.secondary)

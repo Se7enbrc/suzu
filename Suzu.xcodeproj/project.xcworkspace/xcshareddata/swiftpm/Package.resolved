@@ -1,5 +1,5 @@
 {
-  "originHash" : "c64f286c106ccfcb50efb19e19219e8fe34cefb4655452c8494fcf0b2d2204d4",
+  "originHash" : "4f1ec26f6f59b41c40e4592bac120ee6240a59590cf821b83a441d211279e95e",
   "pins" : [
     {
       "identity" : "simplycoreaudio",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "35cc0e6eac5c2ee5049431f4238b0e333cf79869",
         "version" : "4.1.1"
+      }
+    },
+    {
+      "identity" : "sparkle",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/sparkle-project/Sparkle",
+      "state" : {
+        "revision" : "d46d456107feacc80711b21847b82b07bd9fb46e",
+        "version" : "2.9.3"
       }
     },
     {

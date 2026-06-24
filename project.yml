@@ -20,6 +20,12 @@ packages:
   SimplyCoreAudio:
     url: https://github.com/rnine/SimplyCoreAudio
     from: "4.1.1"
+  # Sparkle powers direct-distribution auto-update (Developer ID + notarized).
+  # The updater code is gated on `canImport(Sparkle)`, and a Mac App Store build
+  # would simply drop this package (the App Store delivers its own updates).
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: "2.9.3"
 
 targets:
   Suzu:
@@ -49,6 +55,7 @@ targets:
         COMBINE_HIDPI_IMAGES: YES
     dependencies:
       - package: SimplyCoreAudio
+      - package: Sparkle
     scheme:
       testTargets:
         - SuzuTests
@@ -62,6 +69,9 @@ targets:
     dependencies:
       - target: Suzu
       - package: SimplyCoreAudio
+      # Suzu links Sparkle (via UpdaterController), so the test bundle that
+      # links Suzu needs it resolvable at link time too.
+      - package: Sparkle
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.ugfugl.suzu.tests

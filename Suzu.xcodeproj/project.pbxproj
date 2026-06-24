@@ -11,6 +11,7 @@
 		069FBAFBA31A1B7C3B50A798 /* ReconcilerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78C448BC8BDB750F1D548CF8 /* ReconcilerTests.swift */; };
 		134FB8821FFC4CA2CCBA324E /* SmartMomentsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F09458439F9DDC0F1D9F1C /* SmartMomentsTests.swift */; };
 		1830C3666CE3020EF51AAFFC /* SimplyCoreAudio in Frameworks */ = {isa = PBXBuildFile; productRef = 2350BA0B29948EAE0E8DFE99 /* SimplyCoreAudio */; };
+		19F323CC5A312FAF5C6DEC84 /* UpdaterController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C035BD57A941A442456E310B /* UpdaterController.swift */; };
 		2282D69B24E90FC2E516C2ED /* DeviceRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5C271BD0B1175137EB7B202 /* DeviceRow.swift */; };
 		229AF1435F37261B02CBE0BA /* MenuContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08E3353C615E8ACFD93F980A /* MenuContentView.swift */; };
 		24256A7802059299C57409E7 /* SuggestionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972CDDA84BFD506CE283F7D5 /* SuggestionCard.swift */; };
@@ -32,12 +33,14 @@
 		791FC6C14F3FC7044F8A4961 /* Announce.swift in Sources */ = {isa = PBXBuildFile; fileRef = 480B70AC9C68B55B72905812 /* Announce.swift */; };
 		89914D2B46B530267BF68F3F /* SmartMoment.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD128F5FADE006444B849A5 /* SmartMoment.swift */; };
 		89B9A38C44957FA5F16FF603 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = BC5E2FF433AC8FA9849E3C36 /* PrivacyInfo.xcprivacy */; };
+		970FE8F06EC79457D5AF4E5E /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 2426AC3C780BFA84F160C1C0 /* Sparkle */; };
 		B6BC029B38468F4BDF8EEDB3 /* RightNowHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E61175711259A033D09E43D /* RightNowHeader.swift */; };
 		BFACDD26E044BCD36FF73F4C /* DeviceSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE06D3C4CA03ABE65E8DB061 /* DeviceSnapshot.swift */; };
 		C1B5DD0C713814128B5D2F94 /* Fakes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC1726F09094492E2336677 /* Fakes.swift */; };
 		C9A21BBFBE485DD77B1FA9A1 /* ToastContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CDBE2B39C0AB071FD36E23E /* ToastContent.swift */; };
 		CB49C51C2159CA328F7258F0 /* NamingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D35FC690232C43415825D18E /* NamingTests.swift */; };
 		D699D858698A3E79494CC166 /* DeviceReconciler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D4FDB35BB61601AE15D967 /* DeviceReconciler.swift */; };
+		E1082EB54181E531DC2C8D24 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 7D4ECCD53DC08980349FB709 /* Sparkle */; };
 		E7B1CB975BD9AD38FE79B002 /* LidSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E11BF13EA8AEB965757C93 /* LidSensor.swift */; };
 		FCAAA114A84DB0EF7858D0D7 /* FirstRunView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F566122447B346C8B55E70B3 /* FirstRunView.swift */; };
 /* End PBXBuildFile section */
@@ -81,6 +84,7 @@
 		BCD128F5FADE006444B849A5 /* SmartMoment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartMoment.swift; sourceTree = "<group>"; };
 		BE06D3C4CA03ABE65E8DB061 /* DeviceSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceSnapshot.swift; sourceTree = "<group>"; };
 		BFD00223F5BE652183721C1D /* MenuFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuFooter.swift; sourceTree = "<group>"; };
+		C035BD57A941A442456E310B /* UpdaterController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdaterController.swift; sourceTree = "<group>"; };
 		D35FC690232C43415825D18E /* NamingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamingTests.swift; sourceTree = "<group>"; };
 		DD5A357B1D9F46B294860F81 /* SuzuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuzuApp.swift; sourceTree = "<group>"; };
 		E4F09458439F9DDC0F1D9F1C /* SmartMomentsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartMomentsTests.swift; sourceTree = "<group>"; };
@@ -95,6 +99,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				295B98D8D5F65DA05130EFDB /* SimplyCoreAudio in Frameworks */,
+				E1082EB54181E531DC2C8D24 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,6 +108,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1830C3666CE3020EF51AAFFC /* SimplyCoreAudio in Frameworks */,
+				970FE8F06EC79457D5AF4E5E /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,6 +178,7 @@
 			children = (
 				48C120739C69E2EEF76A0BB1 /* LaunchAtLogin.swift */,
 				A980752148FBEF98A8D0CE6C /* Preferences.swift */,
+				C035BD57A941A442456E310B /* UpdaterController.swift */,
 			);
 			path = System;
 			sourceTree = "<group>";
@@ -231,6 +238,7 @@
 			name = Suzu;
 			packageProductDependencies = (
 				D0833025654CAC8B3B96E2D4 /* SimplyCoreAudio */,
+				7D4ECCD53DC08980349FB709 /* Sparkle */,
 			);
 			productName = Suzu;
 			productReference = 475CD552638D81BD5422D270 /* Suzu.app */;
@@ -251,6 +259,7 @@
 			name = SuzuTests;
 			packageProductDependencies = (
 				2350BA0B29948EAE0E8DFE99 /* SimplyCoreAudio */,
+				2426AC3C780BFA84F160C1C0 /* Sparkle */,
 			);
 			productName = SuzuTests;
 			productReference = 880BBA3D87FA84A40E47A091 /* SuzuTests.xctest */;
@@ -284,6 +293,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				190DC80559F797A25D09722F /* XCRemoteSwiftPackageReference "SimplyCoreAudio" */,
+				5FF69CCD16F74ABF994D4623 /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 92288E3873D335712338D5BC /* Products */;
@@ -337,6 +347,7 @@
 				637C4A1F20AA01420993E2DF /* SuzuApp.swift in Sources */,
 				C9A21BBFBE485DD77B1FA9A1 /* ToastContent.swift in Sources */,
 				3B2C3B0F1E5B0306E19BA6CC /* ToastPresenter.swift in Sources */,
+				19F323CC5A312FAF5C6DEC84 /* UpdaterController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -609,6 +620,14 @@
 				minimumVersion = 4.1.1;
 			};
 		};
+		5FF69CCD16F74ABF994D4623 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -616,6 +635,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 190DC80559F797A25D09722F /* XCRemoteSwiftPackageReference "SimplyCoreAudio" */;
 			productName = SimplyCoreAudio;
+		};
+		2426AC3C780BFA84F160C1C0 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5FF69CCD16F74ABF994D4623 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+		7D4ECCD53DC08980349FB709 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5FF69CCD16F74ABF994D4623 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 		D0833025654CAC8B3B96E2D4 /* SimplyCoreAudio */ = {
 			isa = XCSwiftPackageProductDependency;

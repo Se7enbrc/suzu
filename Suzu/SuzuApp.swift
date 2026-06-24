@@ -44,6 +44,11 @@ struct SuzuApp: App {
                 prefs.refreshLaunchAtLogin()
             }
             audio.start()
+            #if canImport(Sparkle)
+            // Touch the shared updater so Sparkle's background scheduler starts
+            // even if Settings (which hosts the update UI) is never opened.
+            _ = UpdaterController.shared
+            #endif
             if !prefs.firstRunComplete {
                 WelcomePresenter.shared.show { prefs.firstRunComplete = true }
             }

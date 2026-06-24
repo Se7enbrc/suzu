@@ -35,5 +35,23 @@
 	<string>Copyright © 2026 ugfugl.io. All rights reserved.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<!-- Sparkle auto-update (sandboxed, Developer ID + notarized). SUFeedURL is
+	     the public appcast served from the repo's GitHub Pages site. SUPublicEDKey
+	     is the ed25519 PUBLIC key; the private half lives in the signing creds
+	     file (~/.config/suzu/signing.env) and is used by `make release-publish`.
+	     A sandboxed app installs updates through Sparkle's Installer Launcher XPC
+	     service (SUEnableInstallerLauncherService); the matching mach-lookup
+	     exception + network.client live in Suzu.entitlements. Background checks
+	     run daily; the user is always asked before an update installs. -->
+	<key>SUFeedURL</key>
+	<string>https://se7enbrc.github.io/suzu/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>4P3q7toz/gW/C1MJ2PJg/SAJXHXLfgxLWVei1G2KdVA=</string>
+	<key>SUEnableInstallerLauncherService</key>
+	<true/>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUScheduledCheckInterval</key>
+	<integer>86400</integer>
 </dict>
 </plist>

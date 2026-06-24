@@ -11,5 +11,25 @@
 	     here only when a feature actually forces it. -->
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
+
+	<!-- Sparkle auto-update needs two things beyond the base sandbox:
+	     - network.client, to fetch the appcast and download an update;
+	     - a mach-lookup temporary exception so the sandboxed app can reach
+	       Sparkle's Installer Launcher XPC service (named "<bundle-id>-spks";
+	       enabled by SUEnableInstallerLauncherService in Info.plist).
+	     The name is spelled out literally (io.ugfugl.suzu-spks) rather than via
+	     $(PRODUCT_BUNDLE_IDENTIFIER) because this file is consumed by raw
+	     codesign during inside-out signing, which does NOT expand build
+	     variables the way Xcode's build-time entitlement processing does.
+
+	     This is the Developer-ID + notarized posture. A Mac App Store build
+	     would drop Sparkle and BOTH keys below (temporary-exception entitlements
+	     are not accepted on the App Store; updates come from the store itself). -->
+	<key>com.apple.security.network.client</key>
+	<true/>
+	<key>com.apple.security.temporary-exception.mach-lookup.global-name</key>
+	<array>
+		<string>io.ugfugl.suzu-spks</string>
+	</array>
 </dict>
 </plist>

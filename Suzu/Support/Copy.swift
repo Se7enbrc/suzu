@@ -66,4 +66,8 @@ enum Copy {
     static let launchAtLogin = "Open suzu automatically at login"
     static let smartHeading = "Automatic switching"
     static let aboutHeading = "About"
+
+    // Updates (Settings → About).
+    static let automaticUpdates = "Check for updates automatically"
+    static let checkForUpdates = "Check for Updates…"
 }

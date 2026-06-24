@@ -1,5 +1,5 @@
 # SwiftLint configuration for suzu.
-# Guardrails, not gatekeeping. Mirrors glimmer's bar so the two read alike.
+# Guardrails, not gatekeeping.
 
 included:
   - Suzu
