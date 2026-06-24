@@ -37,7 +37,7 @@ ENT      := Suzu/Suzu.entitlements
 # Everything here is namespaced to suzu and references nothing from another
 # project. The ONLY shared input is the Developer ID .p12 (there is just one such
 # Apple cert), imported into suzu's OWN keychain below. Two rules keep suzu's kit
-# from ever colliding with a sibling's (e.g. glimmer):
+# from ever colliding with another project's signing kit on the same Mac:
 #   1. codesign / notarytool are ALWAYS pinned to suzu's keychain via --keychain.
 #   2. suzu NEVER mutates the global keychain search list (it even removes itself
 #      from it). That search-list reordering is exactly how two kits end up
@@ -212,7 +212,7 @@ setup-notary:
 
 # One-time: mint the EdDSA (ed25519) update-signing keypair. Generated under a
 # DEDICATED keychain account ($(SPARKLE_ACCOUNT)) so suzu has its OWN update key,
-# never the shared default one another app (e.g. glimmer) may already use - one
+# never the shared default one another app on this Mac may already use - one
 # signing kit must not borrow another's root of trust. The PRIVATE key is also
 # stored in the creds file (SPARKLE_ED_PRIVATE_KEY) so publishing is prompt-free;
 # the PUBLIC key is printed for Info.plist's SUPublicEDKey. Idempotent. BACK UP

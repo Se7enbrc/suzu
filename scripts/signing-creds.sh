@@ -13,7 +13,7 @@
 # policy has a single home.
 #
 # This is suzu's OWN credentials store, deliberately separate from any sibling
-# project's (e.g. glimmer): different path, different keychain, different notary
+# project's: different path, different keychain, different notary
 # profile. One signing kit must never reach into another's.
 #
 # Default path: ~/.config/suzu/signing.env
